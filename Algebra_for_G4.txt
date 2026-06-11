@@ -1,4 +1,7 @@
 
+// This is code to manipulate the algebra of \C^4 / G_4.
+// It is written in the programming language Magma.
+
 Q<w> := CyclotomicField(24);
 
 Conj := hom<Q -> Q | w^-1>;
