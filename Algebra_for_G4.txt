@@ -1,0 +1,97 @@
+
+Q<w> := CyclotomicField(24);
+
+Conj := hom<Q -> Q | w^-1>;
+
+sq2 := w + w^3 - w^5;
+eps := w^3;
+i := w^6;
+sigma := w^8;
+
+q := 2*w^4 - 1;
+
+lambda := i*sigma + sigma^2;
+
+PQ<
+x, y, X, Y,
+F11, F40, F31, F13, F04, F60, F33, F06
+> := PolynomialRing(Q, 12);
+
+
+FDefs := [
+F11 - (x*X + Y*y),
+F40 - (x^4 - 2*q*x^2*y^2 + y^4),
+F31 - (x^3*Y - q*x^2*y*X + q*x*y^2*Y - y^3*X),
+F13 - (x*Y^3 + q*y*X*Y^2 - q*x*X^2*Y - y*X^3),
+F04 - (X^4 + 2*q*X^2*Y^2 + Y^4),
+F60 - (x^5*y - x*y^5),
+F33 - (x^3*X*Y^2 - x^2*y*Y^3 - x*y^2*X^3 + y^3*X^2*Y),
+F06 - (X^5*Y - X*Y^5)
+];
+
+
+// Confirmation of list of relations:
+// Note that this can take a small while to compute.
+// This will not be a reasonable calculation in algebras
+// which are notably larger.
+
+RelElimList := FDefs;
+RelElId := EliminationIdeal(ideal<PQ | RelElimList>, 4);
+
+G4Relns := [
+F40*F04 - F31*F13 - F11^4 - 3*q*F11*F33,
+F40*F33 + 2*F13*F60 - F11*F31^2,
+F04*F33 + 2*F31*F06 + F11*F13^2,
+F31*F33 + 2*F04*F60 - q*F11^3*F31 - F11*F40*F13,
+F13*F33 + 2*F40*F06 - q*F11^3*F13 + F11*F04*F31,
+F40^2*F13 - F31^3 - 6*q*F60*F33 - 2*F11^3*F60 + q*F11^2*F40*F31,
+F04^2*F31 - F13^3 + 6*q*F06*F33 + 2*F11^3*F06 - q*F11^2*F04*F13,
+4*F60*F06 - F33^2 + q*F11^3*F33 + F11^2*F31*F13,
+F40*F13^2 - F31^2*F04 + 3*q*F33^2 + F11^3*F33 + q*F11^2*F31*F13
+];
+
+RelElId eq ideal<PQ | G4Relns>;
+
+
+// Finding and confirming the ideal for the fixed point space:
+// (Note: we found the equations for this in Matrices_for_G4.txt)
+// Also note, we can add back in the relations of the coordinate algebra
+// so as to be able to have a shorter list of generators of the ideal.
+
+ElimList := [x + Conj(lambda)*y, X + lambda*Y] cat FDefs;
+ElId := EliminationIdeal(ideal<PQ | ElimList>, 4);
+
+
+R33 := F11^3 - 3*q*F33;
+R71 := 2*q*F11*F60 + F40*F31;
+R62 := F11^2*F40 - q*F31^2;
+R53 := 2*F11^2*F31 - q*F40*F13;
+R44 := 4*F11^4 - 3*F40*F04;
+R35 := 2*F11^2*F13 + q*F31*F04;
+R26 := F11^2*F04 + q*F13^2;
+R17 := 2*q*F11*F06 + F13*F04;
+R91 := F11*F40^2 - 6*F31*F60;
+R19 := F11*F04^2 + 6*F13*F06;
+R120 := F40^3 + 12*q*F60^2;
+R012 := F04^3 - 12*q*F06^2;
+
+RList := [R33, R71, R62, R53, R44, R35, R26, R17,
+R91, R19, R120, R012];
+
+G4Relns := [
+F40*F04 - F31*F13 - F11^4 - 3*q*F11*F33,
+F40*F33 + 2*F13*F60 - F11*F31^2,
+F04*F33 + 2*F31*F06 + F11*F13^2,
+F31*F33 + 2*F04*F60 - q*F11^3*F31 - F11*F40*F13,
+F13*F33 + 2*F40*F06 - q*F11^3*F13 + F11*F04*F31,
+F40^2*F13 - F31^3 - 6*q*F60*F33 - 2*F11^3*F60 + q*F11^2*F40*F31,
+F04^2*F31 - F13^3 + 6*q*F06*F33 + 2*F11^3*F06 - q*F11^2*F04*F13,
+4*F60*F06 - F33^2 + q*F11^3*F33 + F11^2*F31*F13,
+F40*F13^2 - F31^2*F04 + 3*q*F33^2 + F11^3*F33 + q*F11^2*F31*F13
+];
+
+RealRList := RList cat G4Relns;
+RealRId := ideal<PQ | RealRList>;
+
+RealRId eq ElId;
+
