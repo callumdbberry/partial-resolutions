@@ -83,7 +83,7 @@ R012 := F04bar^3;
 GenList := [R33, R71, R62, R53, R44, R35, R26, R17,
 R91, R19, R120, R012];
 
-// This can be checked to have no redundant generators
+// This can be checked to have no redundant generators.
 // Bidegrees (3,3), (7,1), (6,2), (5,3), (4,4), (3,5),
 // (2,6), (1,7), (9,1), (1,9), (12,0), (0,12).
 
