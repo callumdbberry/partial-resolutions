@@ -1,0 +1,463 @@
+
+// This is code to blow-up the quotient \C^4 / G_5.
+// It is written in the programming language Magma.
+
+Prel<Pq> := PolynomialRing(Integers());
+Q<q> := NumberField(Pq^2 + 3);
+A := AffineSpace(Q, 4);
+PQ<x,y,X,Y> := CoordinateRing(A);
+q := PQ ! q;
+
+
+
+phiC := hom<PQ -> PQ | X, Y, x, y>;
+phiCQ := function(frac);
+return phiC(Numerator(frac)) / phiC(Denominator(frac));
+end function;
+
+
+FacNice := function(g);
+if g eq 0 then return 0;
+elif IsUnit(g) then return 1;
+else return Factorisation(g);
+end if; end function;
+
+Disp := function(frac);
+if frac eq 0 then return 0;
+else
+	Num := FacNice(Numerator(frac));
+	Den := FacNice(Denominator(frac));
+	if Type(Den) eq 'RngIntElt' then return Num;
+	elif Type(Num) eq 'RngIntElt' then return [[<1,1>], Den];
+	else return [Num, Den]; end if;
+end if; end function;
+
+
+Bideg := function(A);
+if A eq 0 then return [0,0];
+else
+	Num := PQ ! Numerator(A);
+	NumDeg := Exponents(LeadingMonomial(Num));
+	Den := PQ ! Denominator(A);
+	DenDeg := Exponents(LeadingMonomial(Den));
+	return [NumDeg[1] + NumDeg[2] - DenDeg[1] - DenDeg[2],
+		NumDeg[3] + NumDeg[4] - DenDeg[3] - DenDeg[4]];
+end if; end function;
+
+
+
+F11 := x*X + Y*y;
+F40 := x^4 - 2*q*x^2*y^2 + y^4;
+F31 := x^3*Y - q*x^2*y*X + q*x*y^2*Y - y^3*X;
+F13 := x*Y^3 + q*y*X*Y^2 - q*x*X^2*Y - y*X^3;
+F04 := X^4 + 2*q*X^2*Y^2 + Y^4;
+F60 := x^5*y - x*y^5;
+F33 := x^3*X*Y^2 - x^2*y*Y^3 - x*y^2*X^3 + y^3*X^2*Y;
+F06 := X^5*Y - X*Y^5;
+
+F40bar := x^4 + 2*q*x^2*y^2 + y^4;
+F31bar := x^3*Y + q*x^2*y*X - q*x*y^2*Y - y^3*X;
+F13bar := x*Y^3 - q*y*X*Y^2 + q*x*X^2*Y - y*X^3;
+F04bar := X^4 - 2*q*X^2*Y^2 + Y^4;
+G22 := x^2*X^2 + q*x^2*Y^2 + q*y^2*X^2 + y^2*Y^2 - 4*x*y*X*Y;
+G22bar := x^2*X^2 - q*x^2*Y^2 - q*y^2*X^2 + y^2*Y^2 - 4*x*y*X*Y;
+G51 := x^5*X - 5*x^4*y*Y - 5*x*y^4*X + y^5*Y;
+G42 := x^4*X*Y - 2*x^3*y*Y^2 + 2*x*y^3*X^2 - y^4*X*Y;
+G24 := 2*x^2*X*Y^3 + x*y*X^4 - x*y*Y^4 - 2*y^2*X^3*Y;
+G15 := x*X^5 - 5*x*X*Y^4 - 5*y*X^4*Y + y*Y^5;
+
+R44t := G22*G22bar;
+R93 := F40bar*F31*G22bar;
+R93p := F40*F31bar*G22;
+R66 := F04*F40bar*G22bar;
+R66p := F04bar*F40*G22;
+R39 := F04*F13bar*G22bar;
+R39p := F04bar*F13*G22;
+R131 := F40*F40bar*G51;
+R113 := F04*F04bar*G15;
+R142 := F40*F31*F40bar*F31bar;
+R214 := F04*F13*F04bar*F13bar;
+R191 := F40*F31*F40bar^3;
+R119 := F04*F13*F04bar^3;
+R240 := F40^3*F40bar^3;
+R024 := F04^3*F04bar^3;
+
+GenList := [
+R44t, R93, R93p, R66, R66p, R39, R39p,
+R131, R113, R142, R214, R191, R119, R240, R024
+];
+
+// This can be checked to have no redundant generators
+// Bidegrees (4,4), (9,3), (6,6), (3,9), (13,1), (1,13),
+// (14,2), (2,14), (19,1), (1,19), (24,0), (0,24).
+
+
+
+// The charts with strict degrees correspond to
+// (24,0), (13,1), (4,4), (1,13) and (0,24).
+// Therefore we already know these are not going to be covered
+// by a union of other affine charts.
+
+ChartList :=
+[R240, R131, R44t, R113, R024];
+
+
+
+// The following performs a basic check on the other charts
+// to see if there is a relation that will prove it is covered by others.
+// This is explained in more detail in 'Blow-up_for_G4.txt'.
+
+n := 2;
+RemList := GenList;
+
+GenId := ideal<PQ | GenList>;
+GenIdPow := GenId^(n-1);
+for Gen in RemList do
+	if not Gen in ChartList then
+		if Gen^n in ideal<PQ | Exclude(RemList, Gen)> * GenIdPow then
+			Exclude(~RemList, Gen);
+			"Removed generator of bidegree";
+			Bideg(Gen);
+		else
+			"Included generator of bidegree";
+			Bideg(Gen);
+		end if;
+	end if;
+end for; "break";
+
+
+// This leaves the 5 charts we know are required,
+// and also those corresponding to bidegrees (9,3) and (3,9):
+
+RemList eq [
+R44t, R93, R93p, R39, R39p,
+R131, R113, R240, R024
+];
+
+
+
+
+// Now, we want to automate finding relations to show redundancy of
+// generators of the coordinate algebras of each affine chart.
+// This is explained in more detail in 'Blow-up_for_G4.txt'.
+// First, we do those with strict degree, as usual.
+
+G5Gens := [
+F11, F60, F33, F06,
+F40*F31, F40*F04, F13*F04,
+F40^3, F40^2*F13, F40*F13^2, F31*F04^2, F04^3
+];
+OrigGens := G5Gens;
+NewGens := GenList;
+n := 2;
+
+Idealnm1 := GenId^(n-1);
+
+ReqGenList := [];
+for Chart in ChartList do
+	ChartOGens := [];
+	OTestI := Idealnm1 * ideal<PQ | Exclude(NewGens, Chart)>;
+	for OGen in OrigGens do
+		BVal := OGen*Chart^n in OTestI;
+		if not BVal then Append(~ChartOGens, OGen); end if;
+	end for;
+	
+	ChartNGens := [];
+	OtherGens := Exclude(NewGens, Chart);
+	for NGen in OtherGens do
+		BVal := NGen*Chart^(n-1) in Idealnm1 *
+		ideal<PQ | Exclude(OtherGens, NGen)>;
+		if not BVal then Append(~ChartNGens, NGen); end if;
+	end for;
+	
+	
+	Data := [[Chart], ChartOGens, ChartNGens];
+	ReqGenList cat:= [Data];
+	"done for"; Bideg(Chart);
+end for;
+
+
+
+// Look at details of the (24,0) chart:
+
+Chart240 := ReqGenList[1];
+
+// Confirm this is indeed the (12,0) chart we've chosen.
+Bideg(Chart240[1][1]) eq [12,0];
+
+// Check the total number of generators is indeed 4.
+#Chart240[2] + #Chart240[3] eq 4;
+
+// Find the bidegrees of these generators to identify them.
+[Bideg(el) : el in Chart240[2]];
+[Bideg(el) : el in Chart240[3]];
+
+// This confirms that the R_{12,0} chart is isomorphic to \C^4,
+// and is generated by F_{6,0}, F_{4,0}^3,
+// R_{13,1} / R_{24,0} and R_{19,1} / R_{24,0},
+// as stated in my thesis.
+
+
+
+
+// Look at the details of the (13,1) chart:
+
+Chart131 := ReqGenList[2];
+
+Bideg(Chart131[1][1]) eq [7,1];
+
+#Chart131[2] + #Chart131[3] eq 9;
+
+[Bideg(el) : el in Chart131[2]];
+[Bideg(el) : el in Chart131[3]];
+
+// Manually, we find that F_{4,0}^3 is redundant:
+F40^3 eq -6*F60*R191/R131 + F11*R240/R131 - 12*q*F60^2;
+// This wasn't caught by the process as it requires the monomial F60^2,
+// which purely uses the old generators.
+
+// The remaining 8 generators are as described in my thesis.
+//
+// We check the isomorphism with \C[a_2].
+// This has generators a, ..., i, and relations as follows:
+
+PQ2<a,b,c,d,e,f,g,h,i>
+:= PolynomialRing(RationalField(), 9);
+
+a2Relns := [
+a + e + i,
+a*e - b*d,
+a*f - c*d,
+a*h - b*g,
+a*i - c*g,
+b*f - c*e,
+b*i - c*h,
+d*h - e*g,
+d*i - f*g,
+e*i - f*h
+];
+
+// We can quickly check that the ideal formed is prime,
+// and does indeed describe a 4-dimensional variety,
+// meaning that if our generators (or some reparametrisation of them)
+// satisfy these, this is a full list of what they satisfy,
+// as anything else would not be contained in the prime ideal
+// and would cause the variety described to be of dimension < 3.
+
+Dimension(ideal<PQ2 | a2Relns>) eq 4;
+IsPrime(ideal<PQ2 | a2Relns>);
+
+// We form the reparametrisation described in my thesis,
+// and check it does indeed satisfy the a_2 relations given:
+
+Ch33a := -F11 - q*R142/R131;
+Ch33b := 2*q*R93p/R131;
+Ch33c := R44t/R131;
+Ch33d := -R191/R131;
+Ch33e := 2*q*R142/R131;
+Ch33f := R93/R131;
+Ch33g := -R240/R131;
+Ch33h := 2*q*R191/R131 - 12*F60;
+Ch33i := F11 - q*R142/R131;
+
+Ch33a2Relns := [
+Ch33a + Ch33e + Ch33i,
+Ch33a*Ch33e - Ch33b*Ch33d,
+Ch33a*Ch33f - Ch33c*Ch33d,
+Ch33a*Ch33h - Ch33b*Ch33g,
+Ch33a*Ch33i - Ch33c*Ch33g,
+Ch33b*Ch33f - Ch33c*Ch33e,
+Ch33b*Ch33i - Ch33c*Ch33h,
+Ch33d*Ch33h - Ch33e*Ch33g,
+Ch33d*Ch33i - Ch33f*Ch33g,
+Ch33e*Ch33i - Ch33f*Ch33h
+];
+
+[el eq 0 : el in Ch33a2Relns];
+
+
+
+
+// Before we get into the (4,4) chart,
+// we go back to consider the R_{9,3} chart.
+// As this is isomorphic to the R_{9,3}', R_{3,9} and R_{3,9}'
+// charts by symmetries,
+// we only need to describe this one to cover the others.
+//
+// As stated, this R_{9,3} chart does not have a strict degree,
+// or even an effective degree.
+// However, if we temporarily remove new generators
+// it will have an effective degree,
+// so we can use this to make a start.
+
+
+// First, note that 2x + 3y is a strict bidegree
+// when new generator R44t is removed.
+// We check that R_{19,1} is redundant here:
+
+G5Gens := [
+F11, F60, F33, F06,
+F40*F31, F40*F04, F13*F04,
+F40^3, F40^2*F13, F40*F13^2, F31*F04^2, F04^3
+];
+OrigGens := G5Gens;
+NewGens := Exclude(GenList, R44t);
+n := 3;
+Chart := R93;
+
+Idealnm1 := GenId^(n-1);
+
+OtherGens := Exclude(NewGens, Chart);
+R191*Chart^(n-1) in Idealnm1 *
+ideal<PQ | Exclude(OtherGens, R191)>;
+
+
+// Then, we remove new generator R131.
+// This leaves an effective bidegree of x + 5y.
+// This can be used similar to a strict degree,
+// we just have to check there aren't any relations
+// between generators of the same degree,
+// which is easy to do here by hand using \rho.
+//
+// We take out the generator R_{19,1} by the previous method,
+// preventing circular logic by declaring it the first redundancy.
+
+G5Gens := [
+F11, F60, F33, F06,
+F40*F31, F40*F04, F13*F04,
+F40^3, F40^2*F13, F40*F13^2, F31*F04^2, F04^3
+];
+OrigGens := G5Gens;
+NewGens := Exclude(Exclude(GenList, R131), R191);
+n := 3;
+Chart := R93;
+
+Idealnm1 := GenId^(n-1);
+
+ChartOGens := [];
+OTestI := Idealnm1 * ideal<PQ | Exclude(NewGens, Chart)>;
+for OGen in OrigGens do
+	BVal := OGen*Chart^n in OTestI;
+	if not BVal then Append(~ChartOGens, OGen); end if;
+end for;
+
+ChartNGens := [];
+OtherGens := Exclude(NewGens, Chart);
+for NGen in OtherGens do
+	BVal := NGen*Chart^(n-1) in Idealnm1 *
+	ideal<PQ | Exclude(OtherGens, NGen)>;
+	if not BVal then Append(~ChartNGens, NGen); end if;
+end for;
+
+
+Data93 := [[Chart], ChartOGens, ChartNGens];
+"done for"; Bideg(Chart);
+
+
+#Data93[2] + #Data93[3] eq 3;
+
+[Bideg(el) : el in Data93[2]];
+[Bideg(el) : el in Data93[3]];
+
+// This leaves only 3 generators, so 4 when re-adding R131.
+// This confirms that the R_{12,0} chart is isomorphic to \C^4,
+// and is generated by F_{6,0}, R_{4,4} / R_{9,3},
+// R_{6,6} / R_{9,3} and R_{13,1} / R_{9,3},
+// as stated in my thesis.
+
+
+
+
+
+
+// Look at the details of the (4,4) chart:
+
+Chart131 := ReqGenList[3];
+
+Bideg(Chart131[1][1]) eq [4,4];
+
+#Chart131[2] + #Chart131[3] eq 12;
+
+[Bideg(el) : el in Chart131[2]];
+[Bideg(el) : el in Chart131[3]];
+
+// We find these to be the 12 generators suggested by my thesis.
+// Therefore, if we show the ideal of relations given there
+// at the end of Section 5.3 is correct,
+// and that it forms a prime ideal describing a 4-dimensional variety,
+// this will be confirmed.
+// 
+// We confirm the relations equal 0 here,
+// and check the primality and dimension in the file Algebra_for_yogh.txt.
+
+k93 := R93/R44t;
+k93p := R93p/R44t;
+k66 := R66/R44t;
+k66p := R66p/R44t;
+k39 := R39/R44t;
+k39p := R39p/R44t;
+k113 := R113/R44t;
+k131 := R131/R44t;
+
+a1 := k39 + k39p;
+a0 := -k66 - k66p + 2*F11^2;
+a01 := k93 + k93p;
+b1 := 1/3*q*(-k39 + k39p);
+b0 := 1/3*q*(k66 - k66p);
+b01 := 1/3*q*(-k93 + k93p);
+
+h := F11;
+c1 := a1 + b1;
+c0 := a0 + b0;
+c01 := a01 + b01;
+d1 := a1 - b1;
+d0 := a0 - b0;
+d01 := a01 - b01;
+z2 := -2*k113;
+z1 := 4*F06 - 2*F11*b1;
+z0 := 2*F33;
+z01 := 4*F60 + 2*F11*b01;
+z02 := 2*k131;
+
+YoghRelns := [
+c1*d0 - c0*d1 - 2*h*z1,
+c01*d0 - c0*d01 + 2*h*z01,
+c1*d01 - c0*d0 - 2*h*z0,
+c01*d1 - c0*d0 + 2*h*z0,
+c1*c01 - c0^2 - 2*h^2*d0,
+d1*d01 - d0^2 - 2*h^2*c0,
+c1*z1 - c0*z2 + h*d1^2,
+d1*z1 - d0*z2 - h*c1^2,
+c01*z01 - c0*z02 - h*d01^2,
+d01*z01 - d0*z02 + h*c01^2,
+c1*z0 - c0*z1 + h*d1*d0,
+d1*z0 - d0*z1 - h*c1*c0,
+c01*z0 - c0*z01 - h*d01*d0,
+d01*z0 - d0*z01 + h*c01*c0,
+c0*z1 - c01*z2 - 2*h^3*c1 + h*d1*d0,
+d0*z1 - d01*z2 + 2*h^3*d1 - h*c1*c0,
+c0*z01 - c1*z02 + 2*h^3*c01 - h*d01*d0,
+d0*z01 - d1*z02 - 2*h^3*d01 + h*c01*c0,
+c1*z01 - c0*z0 + h*d0^2,
+d1*z01 - d0*z0 - h*c0^2,
+c01*z1 - c0*z0 - h*d0^2,
+d01*z1 - d0*z0 + h*c0^2,
+z2*z0 - z1^2 - h^2*c1*d1,
+z02*z0 - z01^2 - h^2*c01*d01,
+z2*z01 - z1*z0 - h^2*c1*d0 - h^2*c0*d1,
+z02*z1 - z01*z0 - h^2*c01*d0 - h^2*c0*d01,
+z2*z02 - z0^2 + 4*h^6 - 4*h^2*c0*d0,
+z1*z01 - z0^2 - h^2*c0*d0,
+c1^3 + d1^3 + 2*z2*z1,
+c01^3 + d01^3 + 2*z02*z01,
+c1^2*c0 + d1^2*d0 + 2*z1^2,
+c01^2*c0 + d01^2*d0 + 2*z01^2,
+c1*c0^2 + d1*d0^2 + 2*z1*z0,
+c01*c0^2 + d01*d0^2 + 2*z01*z0,
+c0^3 + d0^3 + 2*z1*z01
+];
+
+[el eq 0: el in YoghRelns];
+
+
+
