@@ -112,6 +112,6 @@ Vec2[3] eq 1;
 Vec2[4] eq Conj(lambda);
 
 // Note: due to having the block matrix form ((M^T)^-1, 0, 0, M),
-// this corresponds to X + lambda*Y and x + Conj(lambda)*X.
+// this corresponds to X + lambda*Y and x + Conj(lambda)*y.
 
 // This is used in Algebra_for_G4.txt to find/confirm the corresponding ideal.
