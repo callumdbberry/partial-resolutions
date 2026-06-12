@@ -61,7 +61,7 @@ RelElId eq ideal<PQ | G4Relns>;
 // Also note, we can add back in the relations of the coordinate algebra
 // so as to be able to have a shorter list of generators of the ideal.
 
-ElimList := [x + Conj(lambda)*y, X + lambda*Y] cat FDefs;
+ElimList := [x - Conj(lambda)*y, X - lambda*Y] cat FDefs;
 ElId := EliminationIdeal(ideal<PQ | ElimList>, 4);
 
 
