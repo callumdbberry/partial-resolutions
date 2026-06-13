@@ -1,0 +1,53 @@
+
+// This is code to look at the algebra of the singularity \bar{h}_{2,3}.
+// It is written in the programming language Magma.
+
+PQ<
+ksi1, ksi2, ksi3, r10, rm10,
+r01, r11, r21, r31,
+rm01, rm11, rm21, rm31
+> := PolynomialRing(RationalField(), 13);
+
+hbar23Relns := [
+ksi1 - ksi2 - 3*ksi3,
+r10*rm10 - ksi1*ksi2,
+r01*rm01 - ksi2^3*ksi3,
+r11*rm11 - ksi1*ksi2^2*ksi3,
+r21*rm21 - ksi1^2*ksi2*ksi3,
+r31*rm31 - ksi1^3*ksi3,
+r10*r01 - ksi2*r11,
+r10*r11 - ksi2*r21,
+r10*r21 - ksi2*r31,
+rm10*rm01 - ksi2*rm11,
+rm10*rm11 - ksi2*rm21,
+rm10*rm21 - ksi2*rm31,
+r10*rm11 - ksi1*rm01,
+r10*rm21 - ksi1*rm11,
+r10*rm31 - ksi1*rm21,
+rm10*r11 - ksi1*r01,
+rm10*r21 - ksi1*r11,
+rm10*r31 - ksi1*r21,
+r11*rm01 - ksi3*ksi2^2*r10,
+r21*rm01 - ksi3*ksi2*r10^2,
+r21*rm11 - ksi1*ksi3*ksi2*r10,
+r31*rm01 - ksi3*r10^3,
+r31*rm11 - ksi1*ksi3*r10^2,
+r31*rm21 - ksi1^2*ksi3*r10,
+rm11*r01 - ksi3*ksi2^2*rm10,
+rm21*r01 - ksi3*ksi2*rm10^2,
+rm21*r11 - ksi1*ksi3*ksi2*rm10,
+rm31*r01 - ksi3*rm10^3,
+rm31*r11 - ksi1*ksi3*rm10^2,
+rm31*r21 - ksi1^2*ksi3*rm10,
+r01*r21 - r11^2,
+r01*r31 - r11*r21,
+r11*r31 - r21^2,
+rm01*rm21 - rm11^2,
+rm01*rm31 - rm11*rm21,
+rm11*rm31 - rm21^2
+];
+
+RelnId := ideal<PQ | hbar23Relns>;
+
+IsPrime(RelnId);
+Dimension(RelnId) eq 4;
