@@ -1,0 +1,28 @@
+
+// This is code to define a Poisson bracket function.
+// It is written in the programming language Magma.
+//
+// It is recommended to use this after another file's code,
+// for example Blow-up_for_G5.txt.
+//
+// It can calculate the Poisson bracket, including for fractions.
+// For example, you could run the following line of code:
+// Poisson(c1, c0) eq -8*h*d1;
+
+PoisPure := function(f, g)
+return Derivative(f, x)*Derivative(g, X) + Derivative(f, y)*Derivative(g, Y) - Derivative(f, X)*Derivative(g, x) - Derivative(f, Y)*Derivative(g, y);
+end function;
+
+Poisson := function(f, g)
+fN := Numerator(f);
+fD := Denominator(f);
+gN := Numerator(g);
+gD := Denominator(g);
+
+Term1 := PoisPure(fN, gN) / (fD*gD);
+Term2 := -PoisPure(fD, gN) * fN / (fD^2*gD);
+Term3 := -PoisPure(fN, gD) * gN / (fD*gD^2);
+Term4 := PoisPure(fD, gD) * fN*gN / (fD^2*gD^2);
+
+return Term1 + Term2 + Term3 + Term4;
+end function;
