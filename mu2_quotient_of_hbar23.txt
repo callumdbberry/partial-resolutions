@@ -1,0 +1,331 @@
+
+// This is code to describe a mu_2 quotient of \bar{h}_{2,3}.
+// It is written in the programming language Magma.
+
+Q<w> := CyclotomicField(24);
+
+Conj := hom<Q -> Q | w^-1>;
+
+sq2 := w + w^3 - w^5;
+eps := w^3;
+i := w^6;
+sigma := w^8;
+
+PQ<
+ksi1, ksi2, ksi3, r10, rm10,
+r01, r11, r21, r31,
+rm01, rm11, rm21, rm31
+> := PolynomialRing(Q, 13);
+
+sq2 := PQ ! sq2;
+eps := PQ ! eps;
+i := PQ ! i;
+sigma := PQ ! sigma;
+
+
+// We take the list of relations, from Algebra_for_hbar23.txt.
+
+hbar23Relns := [
+ksi1 - ksi2 - 3*ksi3,
+r10*rm10 - ksi1*ksi2,
+r01*rm01 - ksi3*ksi2^3,
+r11*rm11 - ksi1*ksi3*ksi2^2,
+r21*rm21 - ksi1^2*ksi3*ksi2,
+r31*rm31 - ksi1^3*ksi3,
+r10*r01 - ksi2*r11,
+r10*r11 - ksi2*r21,
+r10*r21 - ksi2*r31,
+rm10*rm01 - ksi2*rm11,
+rm10*rm11 - ksi2*rm21,
+rm10*rm21 - ksi2*rm31,
+r10*rm11 - ksi1*rm01,
+r10*rm21 - ksi1*rm11,
+r10*rm31 - ksi1*rm21,
+rm10*r11 - ksi1*r01,
+rm10*r21 - ksi1*r11,
+rm10*r31 - ksi1*r21,
+r11*rm01 - ksi3*ksi2^2*r10,
+r21*rm01 - ksi3*ksi2*r10^2,
+r21*rm11 - ksi1*ksi3*ksi2*r10,
+r31*rm01 - ksi3*r10^3,
+r31*rm11 - ksi1*ksi3*r10^2,
+r31*rm21 - ksi1^2*ksi3*r10,
+rm11*r01 - ksi3*ksi2^2*rm10,
+rm21*r01 - ksi3*ksi2*rm10^2,
+rm21*r11 - ksi1*ksi3*ksi2*rm10,
+rm31*r01 - ksi3*rm10^3,
+rm31*r11 - ksi1*ksi3*rm10^2,
+rm31*r21 - ksi1^2*ksi3*rm10,
+r01*r21 - r11^2,
+r01*r31 - r11*r21,
+r11*r31 - r21^2,
+rm01*rm21 - rm11^2,
+rm01*rm31 - rm11*rm21,
+rm11*rm31 - rm21^2
+];
+
+hbar23RelnId := ideal<PQ | hbar23Relns>;
+
+
+
+// Have \mu_2 act by the following maps:
+// x -> x - 3y (and so also y -> -y),
+// that is ksi1 -> ksi2, ksi2 -> ksi1, ksi3 -> -ksi3,
+// r10 -> -r10,
+// rm10 -> -rm10,
+// r31 -> rm01  (and rm01 -> r31),
+// r21 -> -rm11 (and rm11 -> -r21),
+// r11 -> rm21  (and rm21 -> r11),
+// r01 -> -rm31 (and rm31 -> -r01).
+// The following is the list of invariants,
+// and a reparam. to neatly match the G_12 affine chart alg.
+// as in "G12 Singularity.txt"
+
+
+
+
+
+
+h := 2*ksi1 - 3*ksi3;
+
+
+a4P := r10^2;
+a2P := ksi3*r10;
+a0P := ksi3^2;
+a02P := ksi3*rm10;
+a04P := rm10^2;
+
+a4 := -4*a4P;
+a2 := 6*i*a2P;
+a0 := 9*a0P;
+a02 := 6*i*a02P;
+a04 := -4*a04P;
+
+
+b3P := r31 + rm01;
+b1P := r21 - rm11;
+b01P := r11 + rm21;
+b03P := r01 - rm31;
+
+b3 := eps*sq2*b3P;
+b1 := eps^3*sq2*b1P;
+b01 := -eps*sq2*b01P;
+b03 := -eps^3*sq2*b03P;
+
+
+c5P := r10*(r31 - rm01);
+c3P := r10*(r21 + rm11);
+c1P := r10*(r11 - rm21);
+c01P := rm10*(r21 + rm11);
+c03P := rm10*(r11 - rm21);
+c05P := rm10*(r01 + rm31);
+
+c5 := -4*eps^3*sq2*c5P;
+c3 := 4*eps*sq2*(c3P + 1/4*h*b3P);
+c1 := 4*eps^3*sq2*(c1P - 1/4*h*b1P);
+c01 := 4*eps*sq2*(c01P - 1/4*h*b01P);
+c03 := 4*eps^3*sq2*(c03P + 1/4*h*b03P);
+c05 := -4*eps*sq2*c05P;
+
+
+
+
+
+Relns := [
+a4*a0 - a2^2,
+a4*a02 - a0*a2 + h^2*a2,
+a4*a04 - a2*a02 + h^2*a0 - h^4,
+a04*a0 - a02^2,
+a04*a2 - a0*a02 + h^2*a02,
+a2*a02 - a0^2 + h^2*a0,
+
+b3*b01 - b1^2 + 1/3*h^2*a2,
+b3*b03 - b1*b01 + 2/3*h^2*a0,
+b03*b1 - b01^2 + 1/3*h^2*a02,
+
+a4*b1 - a2*b3 - 1/2*h*c5,
+a4*b01 - a2*b1 - 1/2*h*c3 + 1/2*h^2*b3,
+a4*b03 - a2*b01 - 1/2*h*c1 - 1/2*h^2*b1,
+a2*b1 - a0*b3 - 1/2*h*c3 + 3/2*h^2*b3,
+a2*b01 - a0*b1 - 1/2*h*c1 + 1/2*h^2*b1,
+a2*b03 - a0*b01 - 1/2*h*c01 - 1/2*h^2*b01,
+a04*b01 - a02*b03 + 1/2*h*c05,
+a04*b1 - a02*b01 + 1/2*h*c03 + 1/2*h^2*b03,
+a04*b3 - a02*b1 + 1/2*h*c01 - 1/2*h^2*b01,
+a02*b01 - a0*b03 + 1/2*h*c03 + 3/2*h^2*b03,
+a02*b1 - a0*b01 + 1/2*h*c01 + 1/2*h^2*b01,
+a02*b3 - a0*b1 + 1/2*h*c1 - 1/2*h^2*b1,
+
+a4*c3 - a2*c5 - 3*h*a4*b3,
+a4*c1 - a2*c3 - 1/2*h^2*c5,
+a4*c01 - a2*c1 + 1/2*h^2*c3 - 1/2*h^3*b3,
+a4*c03 - a2*c01 + 3/2*h^2*c1 + 3/2*h^3*b1,
+a4*c05 - a2*c03 - 3*h*a02*b1 - 2*h^2*c01,
+a2*c3 - a0*c5 - 3*h*a2*b3,
+a2*c1 - a0*c3 - 1/2*h^2*c3 + 3/2*h^3*b3,
+a2*c01 - a0*c1 + 1/2*h^2*c1 - 1/2*h^3*b1,
+a2*c03 - a0*c01 + 3/2*h^2*c01 + 3/2*h^3*b01,
+a2*c05 - a0*c03 - 3*h*a0*b03 + h^2*c03 + 3*h^3*b03,
+a04*c03 - a02*c05 + 3*h*a04*b03,
+a04*c01 - a02*c03 - 1/2*h^2*c05,
+a04*c1 - a02*c01 + 1/2*h^2*c03 + 1/2*h^3*b03,
+a04*c3 - a02*c1 + 3/2*h^2*c01 - 3/2*h^3*b01,
+a04*c5 - a02*c3 + 3*h*a2*b01 - 2*h^2*c1,
+a02*c03 - a0*c05 + 3*h*a02*b03,
+a02*c01 - a0*c03 - 1/2*h^2*c03 - 3/2*h^3*b03,
+a02*c1 - a0*c01 + 1/2*h^2*c01 + 1/2*h^3*b01,
+a02*c3 - a0*c1 + 3/2*h^2*c1 - 3/2*h^3*b1,
+a02*c5 - a0*c3 + 3*h*a0*b3 + h^2*c3 - 3*h^3*b3,
+
+b3*c3 - b1*c5 - h*b3^2 + 2/3*h*a4*a2,
+b3*c1 - b1*c3 + 2*h*b3*b1 + 2/3*h*a4*a0,
+b3*c01 - b1*c1 + 2*h*b1^2 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b3*c03 - b1*c01 + 2*h*b3*b03 + 2/3*h*a0^2,
+b3*c05 - b1*c03 - h*b1*b03 + 2/3*h*a0*a02 + 2/3*h^3*a02,
+b1*c3 - b01*c5 - h*b3*b1 + 2/3*h*a2^2,
+b1*c1 - b01*c3 + 2*h*b3*b01 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b1*c01 - b01*c1 + 2*h*b1*b01 + 2/3*h*a2*a02,
+b01*c03 - b1*c05 + h*b03*b01 - 2/3*h*a02^2,
+b01*c01 - b1*c03 - 2*h*b03*b1 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c03 - b01*c05 + h*b03^2 - 2/3*h*a04*a02,
+b03*c01 - b01*c03 - 2*h*b03*b01 - 2/3*h*a04*a0,
+b03*c1 - b01*c01 - 2*h*b01^2 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c3 - b01*c1 - 2*h*b03*b3 - 2/3*h*a0^2,
+b03*c5 - b01*c3 + h*b01*b3 - 2/3*h*a0*a2 - 2/3*h^3*a2,
+
+c5*c1 - c3^2 + 3*h*c5*b1 + h^2*b3^2 - 8/3*h^2*a4*a2,
+c5*c01 - c3*c1 + 3*h*c5*b01 - h^2*b3*b1 - 10/3*h^2*a4*a0,
+c5*c03 - c3*c01 + 3*h*c1*b1 + h^4*a2,
+c5*c05 - c3*c03 - 5*h^2*b1*b01 - 14/3*h^2*a2*a02 + 2/3*h^4*a0,
+c3*c01 - c1^2 + 4*h^2*b3*b01 + 4/3*h^2*a2*a0 + 1/3*h^4*a2,
+c3*c03 - c1*c01 + 8*h^2*b1*b01 + 8/3*h^2*a2*a02 - 2/3*h^4*a0,
+c05*c01 - c03^2 - 3*h*c05*b01 + h^2*b03^2 - 8/3*h^2*a04*a02,
+c05*c1 - c03*c01 - 3*h*c05*b1 - h^2*b03*b01 - 10/3*h^2*a04*a0,
+c05*c3 - c03*c1 - 3*h*c01*b01 + h^4*a02,
+c03*c1 - c01^2 + 4*h^2*b03*b1 + 4/3*h^2*a02*a0 + 1/3*h^4*a02,
+
+4*a4^2*a2 + 12*a4*b3^2 - 3*c5^2,
+4*a4^2*a0 + 12*a4*b3*b1 - 3*c5*c3 + 3*h*b3*c5,
+4*a4^2*a02 + 12*a2*b3*b1 - 3*c5*c1 + 3*h*b1*c5 + 4*h^2*a4*a2,
+4*a2^2*a0 + 12*a4*b1*b01 - 3*c3*c1 - 3*h^2*b3*b1 - 6*h^2*a2^2,
+4*a2^2*a02 + 12*a2*b1*b01 - 3*c1^2 + 3*h^2*b1^2,
+4*a0^3 + 12*a0*b1*b01 - 3*c5*c05 - 12*h^2*b1*b01 - 4*h^4*a0,
+4*a04^2*a02 + 12*a04*b03^2 - 3*c05^2,
+4*a04^2*a0 + 12*a04*b03*b01 - 3*c05*c03 - 3*h*b03*c05,
+4*a04^2*a2 + 12*a02*b03*b01 - 3*c05*c01 - 3*h*b01*c05 + 4*h^2*a04*a02,
+4*a02^2*a0 + 12*a04*b01*b1 - 3*c03*c01 - 3*h^2*b03*b01 - 6*h^2*a02^2,
+4*a02^2*a2 + 12*a02*b01*b1 - 3*c01^2 + 3*h^2*b01^2
+];
+
+[el in hbar23RelnId : el in Relns];
+
+
+// This confirms that they are all indeed 0.
+// To check this ideal is prime,
+// and that it forms a 4-dimensonal variety,
+// we perform the following code:
+
+
+PQ2<
+h,a4,a2,a0,a02,a04,
+b03,b01,b1,b3,
+c5,c3,c1,c01,c03,c05
+> := PolynomialRing(RationalField(), 16);
+
+
+Relns := [
+a4*a0 - a2^2,
+a4*a02 - a0*a2 + h^2*a2,
+a4*a04 - a2*a02 + h^2*a0 - h^4,
+a04*a0 - a02^2,
+a04*a2 - a0*a02 + h^2*a02,
+a2*a02 - a0^2 + h^2*a0,
+
+b3*b01 - b1^2 + 1/3*h^2*a2,
+b3*b03 - b1*b01 + 2/3*h^2*a0,
+b03*b1 - b01^2 + 1/3*h^2*a02,
+
+a4*b1 - a2*b3 - 1/2*h*c5,
+a4*b01 - a2*b1 - 1/2*h*c3 + 1/2*h^2*b3,
+a4*b03 - a2*b01 - 1/2*h*c1 - 1/2*h^2*b1,
+a2*b1 - a0*b3 - 1/2*h*c3 + 3/2*h^2*b3,
+a2*b01 - a0*b1 - 1/2*h*c1 + 1/2*h^2*b1,
+a2*b03 - a0*b01 - 1/2*h*c01 - 1/2*h^2*b01,
+a04*b01 - a02*b03 + 1/2*h*c05,
+a04*b1 - a02*b01 + 1/2*h*c03 + 1/2*h^2*b03,
+a04*b3 - a02*b1 + 1/2*h*c01 - 1/2*h^2*b01,
+a02*b01 - a0*b03 + 1/2*h*c03 + 3/2*h^2*b03,
+a02*b1 - a0*b01 + 1/2*h*c01 + 1/2*h^2*b01,
+a02*b3 - a0*b1 + 1/2*h*c1 - 1/2*h^2*b1,
+
+a4*c3 - a2*c5 - 3*h*a4*b3,
+a4*c1 - a2*c3 - 1/2*h^2*c5,
+a4*c01 - a2*c1 + 1/2*h^2*c3 - 1/2*h^3*b3,
+a4*c03 - a2*c01 + 3/2*h^2*c1 + 3/2*h^3*b1,
+a4*c05 - a2*c03 - 3*h*a02*b1 - 2*h^2*c01,
+a2*c3 - a0*c5 - 3*h*a2*b3,
+a2*c1 - a0*c3 - 1/2*h^2*c3 + 3/2*h^3*b3,
+a2*c01 - a0*c1 + 1/2*h^2*c1 - 1/2*h^3*b1,
+a2*c03 - a0*c01 + 3/2*h^2*c01 + 3/2*h^3*b01,
+a2*c05 - a0*c03 - 3*h*a0*b03 + h^2*c03 + 3*h^3*b03,
+a04*c03 - a02*c05 + 3*h*a04*b03,
+a04*c01 - a02*c03 - 1/2*h^2*c05,
+a04*c1 - a02*c01 + 1/2*h^2*c03 + 1/2*h^3*b03,
+a04*c3 - a02*c1 + 3/2*h^2*c01 - 3/2*h^3*b01,
+a04*c5 - a02*c3 + 3*h*a2*b01 - 2*h^2*c1,
+a02*c03 - a0*c05 + 3*h*a02*b03,
+a02*c01 - a0*c03 - 1/2*h^2*c03 - 3/2*h^3*b03,
+a02*c1 - a0*c01 + 1/2*h^2*c01 + 1/2*h^3*b01,
+a02*c3 - a0*c1 + 3/2*h^2*c1 - 3/2*h^3*b1,
+a02*c5 - a0*c3 + 3*h*a0*b3 + h^2*c3 - 3*h^3*b3,
+
+b3*c3 - b1*c5 - h*b3^2 + 2/3*h*a4*a2,
+b3*c1 - b1*c3 + 2*h*b3*b1 + 2/3*h*a4*a0,
+b3*c01 - b1*c1 + 2*h*b1^2 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b3*c03 - b1*c01 + 2*h*b3*b03 + 2/3*h*a0^2,
+b3*c05 - b1*c03 - h*b1*b03 + 2/3*h*a0*a02 + 2/3*h^3*a02,
+b1*c3 - b01*c5 - h*b3*b1 + 2/3*h*a2^2,
+b1*c1 - b01*c3 + 2*h*b3*b01 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b1*c01 - b01*c1 + 2*h*b1*b01 + 2/3*h*a2*a02,
+b01*c03 - b1*c05 + h*b03*b01 - 2/3*h*a02^2,
+b01*c01 - b1*c03 - 2*h*b03*b1 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c03 - b01*c05 + h*b03^2 - 2/3*h*a04*a02,
+b03*c01 - b01*c03 - 2*h*b03*b01 - 2/3*h*a04*a0,
+b03*c1 - b01*c01 - 2*h*b01^2 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c3 - b01*c1 - 2*h*b03*b3 - 2/3*h*a0^2,
+b03*c5 - b01*c3 + h*b01*b3 - 2/3*h*a0*a2 - 2/3*h^3*a2,
+
+c5*c1 - c3^2 + 3*h*c5*b1 + h^2*b3^2 - 8/3*h^2*a4*a2,
+c5*c01 - c3*c1 + 3*h*c5*b01 - h^2*b3*b1 - 10/3*h^2*a4*a0,
+c5*c03 - c3*c01 + 3*h*c1*b1 + h^4*a2,
+c5*c05 - c3*c03 - 5*h^2*b1*b01 - 14/3*h^2*a2*a02 + 2/3*h^4*a0,
+c3*c01 - c1^2 + 4*h^2*b3*b01 + 4/3*h^2*a2*a0 + 1/3*h^4*a2,
+c3*c03 - c1*c01 + 8*h^2*b1*b01 + 8/3*h^2*a2*a02 - 2/3*h^4*a0,
+c05*c01 - c03^2 - 3*h*c05*b01 + h^2*b03^2 - 8/3*h^2*a04*a02,
+c05*c1 - c03*c01 - 3*h*c05*b1 - h^2*b03*b01 - 10/3*h^2*a04*a0,
+c05*c3 - c03*c1 - 3*h*c01*b01 + h^4*a02,
+c03*c1 - c01^2 + 4*h^2*b03*b1 + 4/3*h^2*a02*a0 + 1/3*h^4*a02,
+
+4*a4^2*a2 + 12*a4*b3^2 - 3*c5^2,
+4*a4^2*a0 + 12*a4*b3*b1 - 3*c5*c3 + 3*h*b3*c5,
+4*a4^2*a02 + 12*a2*b3*b1 - 3*c5*c1 + 3*h*b1*c5 + 4*h^2*a4*a2,
+4*a2^2*a0 + 12*a4*b1*b01 - 3*c3*c1 - 3*h^2*b3*b1 - 6*h^2*a2^2,
+4*a2^2*a02 + 12*a2*b1*b01 - 3*c1^2 + 3*h^2*b1^2,
+4*a0^3 + 12*a0*b1*b01 - 3*c5*c05 - 12*h^2*b1*b01 - 4*h^4*a0,
+4*a04^2*a02 + 12*a04*b03^2 - 3*c05^2,
+4*a04^2*a0 + 12*a04*b03*b01 - 3*c05*c03 - 3*h*b03*c05,
+4*a04^2*a2 + 12*a02*b03*b01 - 3*c05*c01 - 3*h*b01*c05 + 4*h^2*a04*a02,
+4*a02^2*a0 + 12*a04*b01*b1 - 3*c03*c01 - 3*h^2*b03*b01 - 6*h^2*a02^2,
+4*a02^2*a2 + 12*a02*b01*b1 - 3*c01^2 + 3*h^2*b01^2
+];
+
+RelnId := ideal<PQ2 | Relns>;
+
+Dimension(RelnId) eq 4;
+IsPrime(RelnId);
+
+
+// We show this ideal is dimension 2, as claimed in the thesis:
+
+Dimension(ideal<PQ2 | Relns, h, c3, c1, c01, c03>) eq 2;
+

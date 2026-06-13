@@ -1,0 +1,355 @@
+
+// This is code to blow-up the quotient \C^4 / G_12.
+// It is written in the programming language Magma.
+
+PQ<x,y,X,Y> := PolynomialRing(RationalField(), 4);
+
+
+phiC := hom<PQ -> PQ | X, Y, x, y>;
+phiCQ := function(frac);
+return phiC(Numerator(frac)) / phiC(Denominator(frac));
+end function;
+
+
+FacNice := function(g);
+if g eq 0 then return 0;
+elif IsUnit(g) then return 1;
+else return Factorisation(g);
+end if; end function;
+
+Disp := function(frac);
+if frac eq 0 then return 0;
+else
+	Num := FacNice(Numerator(frac));
+	Den := FacNice(Denominator(frac));
+	if Type(Den) eq 'RngIntElt' then return Num;
+	elif Type(Num) eq 'RngIntElt' then return [[<1,1>], Den];
+	else return [Num, Den]; end if;
+end if; end function;
+
+
+Bideg := function(A);
+if A eq 0 then return [0,0];
+else
+	Num := PQ ! Numerator(A);
+	NumDeg := Exponents(LeadingMonomial(Num));
+	Den := PQ ! Denominator(A);
+	DenDeg := Exponents(LeadingMonomial(Den));
+	return [NumDeg[1] + NumDeg[2] - DenDeg[1] - DenDeg[2],
+		NumDeg[3] + NumDeg[4] - DenDeg[3] - DenDeg[4]];
+end if; end function;
+
+
+
+F1c1 := x*X + y*Y;
+F6c0 := x^5*y - x*y^5;
+F4c2 := -1/3*(x^4*X*Y - 2*x^3*y*Y^2 + 2*x*y^3*X^2 - y^4*X*Y);
+F2c4 := -2/3*(x^2*X*Y^3 + 1/2*x*y*X^4 - 1/2*x*y*Y^4 - y^2*X^3*Y);
+F0c6 := X^5*Y - X*Y^5;
+F8c0 := x^8 + 14*x^4*y^4 + y^8;
+F6c2 := x^6*Y^2 + 3*x^4*y^2*X^2 - 8*x^3*y^3*X*Y + 3*x^2*y^4*Y^2 + y^6*X^2;
+F4c4 := x^4*Y^4 - 4*x^3*y*X^3*Y + 6*x^2*y^2*X^2*Y^2 - 4*x*y^3*X*Y^3 + y^4*X^4;
+F2c6 := 3*(x^2*X^4*Y^2 + 1/3*x^2*Y^6 - 8/3*x*y*X^3*Y^3 + 1/3*y^2*X^6 + y^2*X^2*Y^4);
+F0c8 := X^8 + 14*X^4*Y^4 + Y^8;
+F11c1 := -(x^11*Y + 11*x^8*y^3*X - 22*x^7*y^4*Y + 22*x^4*y^7*X - 11*x^3*y^8*Y - y^11*X);
+F9c3 := -(x^9*Y^3 - 9*x^7*y^2*X^2*Y + 15*x^6*y^3*X*Y^2 - 9*x^5*y^4*Y^3 + 9*x^4*y^5*X^3 - 15*x^3*y^6*X^2*Y + 9*x^2*y^7*X*Y^2 - y^9*X^3);
+F7c5 := 5*x^7*X^4*Y - x^7*Y^5 + 7*x^4*y^3*X^5 - 35*x^4*y^3*X*Y^4 + 35*x^3*y^4*X^4*Y - 7*x^3*y^4*Y^5 + y^7*X^5 - 5*y^7*X*Y^4;
+F5c7 := -7*x^5*X^4*Y^3 - x^5*Y^7 - 5*x^4*y*X^7 - 35*x^4*y*X^3*Y^4 + 35*x*y^4*X^4*Y^3 + 5*x*y^4*Y^7 + y^5*X^7 + 7*y^5*X^3*Y^4;
+F3c9 := 9*x^3*X^4*Y^5 - x^3*Y^9 - 9*x^2*y*X^7*Y^2 - 15*x^2*y*X^3*Y^6 + 15*x*y^2*X^6*Y^3 + 9*x*y^2*X^2*Y^7 + y^3*X^9 - 9*y^3*X^5*Y^4;
+F1c11 := 11*(x*X^8*Y^3 + 2*x*X^4*Y^7 - 1/11*x*Y^11 + 1/11*y*X^11 - 2*y*X^7*Y^4 - y*X^3*Y^8);
+
+G12Gens := [F1c1, F6c0, F4c2, F2c4, F0c6, F8c0, F6c2, F4c4, F2c6,
+F0c8, F11c1, F9c3, F7c5, F5c7, F3c9, F1c11];
+
+
+
+R4c4 := F1c1^4 + 4*F4c4;
+R10c2 := F1c1^2*F8c0 + 36*F6c0*F4c2;
+R9c3 := F1c1^3*F6c0 - 2*F9c3;
+R8c4 := F1c1^2*F6c2 + 12*F6c0*F2c4;
+R7c5 := 27*F1c1^3*F4c2 + 2*F7c5;
+R6c6 := F1c1^2*F4c4 + 4*F6c0*F0c6;
+R5c7 := 27*F1c1^3*F2c4 - 2*F5c7;
+R4c8 := F1c1^2*F2c6 + 12*F0c6*F4c2;
+R3c9 := F1c1^3*F0c6 + 2*F3c9;
+R2c10 := F1c1^2*F0c8 + 36*F0c6*F2c4;
+R12c2 := F1c1*F11c1 + 6*F6c0*F6c2;
+R2c12 := F1c1*F1c11 - 6*F0c6*F2c6;
+R14c2 := F8c0*F6c2 - 3*F1c1^2*F6c0^2;
+R2c14 := F0c8*F2c6 - 3*F1c1^2*F0c6^2;
+R17c1 := F1c1*F8c0^2 + 6*F6c0*F11c1;
+R1c17 := F1c1*F0c8^2 - 6*F0c6*F1c11;
+R19c1 := F8c0*F11c1 + 18*F1c1*F6c0^3;
+R1c19 := F0c8*F1c11 - 18*F1c1*F0c6^3;
+R24c0 := F8c0^3 - 108*F6c0^4;
+R0c24 := F0c8^3 - 108*F0c6^4;
+
+RList := [
+R4c4, R10c2, R9c3, R8c4, R7c5, R6c6, R5c7, R4c8, R3c9, R2c10,
+R12c2, R2c12, R14c2, R2c14, R17c1, R1c17, R19c1, R1c19, R24c0, R0c24
+];
+GenList := RList;
+
+// This can be checked to have no redundant generators.
+// Bidegrees (4,4), (10,2), (9,3), (8,4), (7,5), (6,6), (5,7),
+// (4,8), (3,9), (2,10), (12,2), (2,12), (14,2), (2,14),
+// (17,1), (1,17), (19,1), (1,19), (24,0), (0,24).
+
+
+// The charts with strict degrees correspond to
+// (24,0), (10,2), (4,4), (2,10) and (0,24).
+// Therefore we already know these are not going to be covered
+// by a union of other affine charts.
+
+ChartList :=
+[R24c0, R10c2, R4c4, R2c10, R0c24];
+
+
+
+// The following performs a basic check on the other charts
+// to see if there is a relation that will prove it is covered by others.
+// This is explained in more detail in 'Blow-up_for_G4.txt'.
+
+n := 2;
+RemList := GenList;
+
+GenId := ideal<PQ | GenList>;
+GenIdPow := GenId^(n-1);
+for Gen in RemList do
+	if not Gen in ChartList then
+		if Gen^n in ideal<PQ | Exclude(RemList, Gen)> * GenIdPow then
+			Exclude(~RemList, Gen);
+			"Removed generator of bidegree";
+			Bideg(Gen);
+		else
+			"Included generator of bidegree";
+			Bideg(Gen);
+		end if;
+	end if;
+end for; "break";
+
+
+// This leaves the 5 charts we know are required,
+// and no others.
+
+Set(RemList) eq Set(ChartList);
+
+
+
+// Now, we want to automate finding relations to show redundancy of
+// generators of the coordinate algebras of each affine chart.
+// This is explained in more detail in 'Blow-up_for_G4.txt'.
+
+OrigGens := G12Gens;
+NewGens := GenList;
+n := 2;
+
+Idealnm1 := GenId^(n-1);
+
+ReqGenList := [];
+for Chart in ChartList do
+	ChartOGens := [];
+	OTestI := Idealnm1 * ideal<PQ | Exclude(NewGens, Chart)>;
+	for OGen in OrigGens do
+		BVal := OGen*Chart^n in OTestI;
+		if not BVal then Append(~ChartOGens, OGen); end if;
+	end for;
+	
+	ChartNGens := [];
+	OtherGens := Exclude(NewGens, Chart);
+	for NGen in OtherGens do
+		BVal := NGen*Chart^(n-1) in Idealnm1 *
+		ideal<PQ | Exclude(OtherGens, NGen)>;
+		if not BVal then Append(~ChartNGens, NGen); end if;
+	end for;
+	
+	
+	Data := [[Chart], ChartOGens, ChartNGens];
+	ReqGenList cat:= [Data];
+	"done for"; Bideg(Chart);
+end for;
+
+
+
+// Look at details of the (24,0) chart:
+// (Note, this is isomorphic to the (0,24)
+// chart by symmetry.)
+
+Chart24c0 := ReqGenList[1];
+
+// Confirm this is indeed the (24,0) chart we've chosen.
+Chart24c0[1][1] eq R24c0;
+
+// Check the total number of generators is indeed 4.
+#Chart24c0[2] + #Chart24c0[3] eq 4;
+
+// Find the bidegrees of these generators to identify them.
+[Bideg(el) : el in Chart24c0[2]];
+[Bideg(el) : el in Chart24c0[3]];
+
+// This confirms that the R_{24,0} chart is isomorphic to \C^4,
+// and is generated by F_{6,0}, F_{8,0},
+// R_{17,1} / R_{24,0} and R_{19,1} / R_{24,0},
+// as stated in my thesis.
+
+
+
+
+// Look at details of the (10,2) chart:
+// (Note, this is isomorphic to the (2,10)
+// chart by symmetry.)
+
+Chart10c2 := ReqGenList[2];
+
+// Confirm this is indeed the (24,0) chart we've chosen.
+Chart10c2[1][1] eq R10c2;
+
+// Check the total number of generators is indeed 4.
+#Chart10c2[2] + #Chart10c2[3] eq 4;
+
+// Find the bidegrees of these generators to identify them.
+[Bideg(el) : el in Chart10c2[2]];
+[Bideg(el) : el in Chart10c2[3]];
+
+// This confirms that the R_{24,0} chart is isomorphic to \C^4,
+// and is generated by R_{4,4} / R_{10,2}, R_{9,3} / R_{10,2},
+// R_{12,2} / R_{10,2} and R_{17,1} / R_{10,2},
+// as stated in my thesis.
+
+
+
+
+// Look at the details of the (4,4) chart:
+
+Chart4c4 := ReqGenList[3];
+
+Chart4c4[1][1] eq R4c4;
+
+#Chart4c4[2] + #Chart4c4[3] eq 16;
+
+[Bideg(el) : el in Chart4c4[2]];
+[Bideg(el) : el in Chart4c4[3]];
+
+// We find these to be the 16 generators suggested by my thesis.
+// Therefore, if we show we can linearly reparametrise the generators
+// to get an ideal of relations which is prime
+// and descibes a variety of dimension 4,
+// this will be a full description of the relations.
+// 
+// We confirm the relations equal 0 here,
+// and check the primality and dimension
+// in the file mu2_quotient_of_hbar23.txt.
+//
+// Also there, we check that the ideal
+// formed by {h, c3, c1, c01, c03} is dimension 2, as claimed.
+
+
+h := F1c1;
+
+a4 := R10c2/R4c4;
+a2 := 3*R8c4/R4c4;
+a0 := 9*R6c6/R4c4;
+a02 := 3*R4c8/R4c4;
+a04 := R2c10/R4c4;
+
+b3 := R9c3/R4c4;
+b1 := -R7c5/R4c4;
+b01 := R5c7/R4c4;
+b03 := -R3c9/R4c4;
+
+c5 := 2*R12c2/R4c4;
+c3 := 3*F6c0;
+c1 := 3*F4c2;
+c01 := 3*F2c4;
+c03 := 3*F0c6;
+c05 := -2*R2c12/R4c4;
+
+
+hbar23QuotRelns := [
+a4*a0 - a2^2,
+a4*a02 - a0*a2 + h^2*a2,
+a4*a04 - a2*a02 + h^2*a0 - h^4,
+a04*a0 - a02^2,
+a04*a2 - a0*a02 + h^2*a02,
+a2*a02 - a0^2 + h^2*a0,
+
+b3*b01 - b1^2 + 1/3*h^2*a2,
+b3*b03 - b1*b01 + 2/3*h^2*a0,
+b03*b1 - b01^2 + 1/3*h^2*a02,
+
+a4*b1 - a2*b3 - 1/2*h*c5,
+a4*b01 - a2*b1 - 1/2*h*c3 + 1/2*h^2*b3,
+a4*b03 - a2*b01 - 1/2*h*c1 - 1/2*h^2*b1,
+a2*b1 - a0*b3 - 1/2*h*c3 + 3/2*h^2*b3,
+a2*b01 - a0*b1 - 1/2*h*c1 + 1/2*h^2*b1,
+a2*b03 - a0*b01 - 1/2*h*c01 - 1/2*h^2*b01,
+a04*b01 - a02*b03 + 1/2*h*c05,
+a04*b1 - a02*b01 + 1/2*h*c03 + 1/2*h^2*b03,
+a04*b3 - a02*b1 + 1/2*h*c01 - 1/2*h^2*b01,
+a02*b01 - a0*b03 + 1/2*h*c03 + 3/2*h^2*b03,
+a02*b1 - a0*b01 + 1/2*h*c01 + 1/2*h^2*b01,
+a02*b3 - a0*b1 + 1/2*h*c1 - 1/2*h^2*b1,
+
+a4*c3 - a2*c5 - 3*h*a4*b3,
+a4*c1 - a2*c3 - 1/2*h^2*c5,
+a4*c01 - a2*c1 + 1/2*h^2*c3 - 1/2*h^3*b3,
+a4*c03 - a2*c01 + 3/2*h^2*c1 + 3/2*h^3*b1,
+a4*c05 - a2*c03 - 3*h*a02*b1 - 2*h^2*c01,
+a2*c3 - a0*c5 - 3*h*a2*b3,
+a2*c1 - a0*c3 - 1/2*h^2*c3 + 3/2*h^3*b3,
+a2*c01 - a0*c1 + 1/2*h^2*c1 - 1/2*h^3*b1,
+a2*c03 - a0*c01 + 3/2*h^2*c01 + 3/2*h^3*b01,
+a2*c05 - a0*c03 - 3*h*a0*b03 + h^2*c03 + 3*h^3*b03,
+a04*c03 - a02*c05 + 3*h*a04*b03,
+a04*c01 - a02*c03 - 1/2*h^2*c05,
+a04*c1 - a02*c01 + 1/2*h^2*c03 + 1/2*h^3*b03,
+a04*c3 - a02*c1 + 3/2*h^2*c01 - 3/2*h^3*b01,
+a04*c5 - a02*c3 + 3*h*a2*b01 - 2*h^2*c1,
+a02*c03 - a0*c05 + 3*h*a02*b03,
+a02*c01 - a0*c03 - 1/2*h^2*c03 - 3/2*h^3*b03,
+a02*c1 - a0*c01 + 1/2*h^2*c01 + 1/2*h^3*b01,
+a02*c3 - a0*c1 + 3/2*h^2*c1 - 3/2*h^3*b1,
+a02*c5 - a0*c3 + 3*h*a0*b3 + h^2*c3 - 3*h^3*b3,
+
+b3*c3 - b1*c5 - h*b3^2 + 2/3*h*a4*a2,
+b3*c1 - b1*c3 + 2*h*b3*b1 + 2/3*h*a4*a0,
+b3*c01 - b1*c1 + 2*h*b1^2 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b3*c03 - b1*c01 + 2*h*b3*b03 + 2/3*h*a0^2,
+b3*c05 - b1*c03 - h*b1*b03 + 2/3*h*a0*a02 + 2/3*h^3*a02,
+b1*c3 - b01*c5 - h*b3*b1 + 2/3*h*a2^2,
+b1*c1 - b01*c3 + 2*h*b3*b01 + 2/3*h*a2*a0 - 1/3*h^3*a2,
+b1*c01 - b01*c1 + 2*h*b1*b01 + 2/3*h*a2*a02,
+b01*c03 - b1*c05 + h*b03*b01 - 2/3*h*a02^2,
+b01*c01 - b1*c03 - 2*h*b03*b1 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c03 - b01*c05 + h*b03^2 - 2/3*h*a04*a02,
+b03*c01 - b01*c03 - 2*h*b03*b01 - 2/3*h*a04*a0,
+b03*c1 - b01*c01 - 2*h*b01^2 - 2/3*h*a02*a0 + 1/3*h^3*a02,
+b03*c3 - b01*c1 - 2*h*b03*b3 - 2/3*h*a0^2,
+b03*c5 - b01*c3 + h*b01*b3 - 2/3*h*a0*a2 - 2/3*h^3*a2,
+
+c5*c1 - c3^2 + 3*h*c5*b1 + h^2*b3^2 - 8/3*h^2*a4*a2,
+c5*c01 - c3*c1 + 3*h*c5*b01 - h^2*b3*b1 - 10/3*h^2*a4*a0,
+c5*c03 - c3*c01 + 3*h*c1*b1 + h^4*a2,
+c5*c05 - c3*c03 - 5*h^2*b1*b01 - 14/3*h^2*a2*a02 + 2/3*h^4*a0,
+c3*c01 - c1^2 + 4*h^2*b3*b01 + 4/3*h^2*a2*a0 + 1/3*h^4*a2,
+c3*c03 - c1*c01 + 8*h^2*b1*b01 + 8/3*h^2*a2*a02 - 2/3*h^4*a0,
+c05*c01 - c03^2 - 3*h*c05*b01 + h^2*b03^2 - 8/3*h^2*a04*a02,
+c05*c1 - c03*c01 - 3*h*c05*b1 - h^2*b03*b01 - 10/3*h^2*a04*a0,
+c05*c3 - c03*c1 - 3*h*c01*b01 + h^4*a02,
+c03*c1 - c01^2 + 4*h^2*b03*b1 + 4/3*h^2*a02*a0 + 1/3*h^4*a02,
+
+4*a4^2*a2 + 12*a4*b3^2 - 3*c5^2,
+4*a4^2*a0 + 12*a4*b3*b1 - 3*c5*c3 + 3*h*b3*c5,
+4*a4^2*a02 + 12*a2*b3*b1 - 3*c5*c1 + 3*h*b1*c5 + 4*h^2*a4*a2,
+4*a2^2*a0 + 12*a4*b1*b01 - 3*c3*c1 - 3*h^2*b3*b1 - 6*h^2*a2^2,
+4*a2^2*a02 + 12*a2*b1*b01 - 3*c1^2 + 3*h^2*b1^2,
+4*a0^3 + 12*a0*b1*b01 - 3*c5*c05 - 12*h^2*b1*b01 - 4*h^4*a0,
+4*a04^2*a02 + 12*a04*b03^2 - 3*c05^2,
+4*a04^2*a0 + 12*a04*b03*b01 - 3*c05*c03 - 3*h*b03*c05,
+4*a04^2*a2 + 12*a02*b03*b01 - 3*c05*c01 - 3*h*b01*c05 + 4*h^2*a04*a02,
+4*a02^2*a0 + 12*a04*b01*b1 - 3*c03*c01 - 3*h^2*b03*b01 - 6*h^2*a02^2,
+4*a02^2*a2 + 12*a02*b01*b1 - 3*c01^2 + 3*h^2*b01^2
+];
+
+[el eq 0: el in hbar23QuotRelns];
+
