@@ -1,0 +1,301 @@
+
+// This is code to describe the algebra of Y(6).
+// It is written in the programming language Magma.
+
+PQ<x,y,X,Y> := PolynomialRing(Integers(), 4);
+
+e := x*X + y*Y;
+q := x*y;
+Q := X*Y;
+
+a0 := x^6 + y^6;
+a1 := x^5*Y + y^5*X;
+a2 := x^4*Y^2 + y^4*X^2;
+a3 := x^3*Y^3 + y^3*X^3;
+a4 := x^2*Y^4 + y^2*X^4;
+a5 := x*Y^5 + y*X^5;
+a6 := Y^6 + X^6;
+
+Psi0 := 1;
+Psi1 := e;
+Psi2 := e*Psi1 - q*Q*Psi0;
+Psi3 := e*Psi2 - q*Q*Psi1;
+Psi4 := e*Psi3 - q*Q*Psi2;
+
+del := x*X - y*Y;
+D := del^2;
+bet0 := x^6 - y^6;
+bet1 := x^5*Y - y^5*X;
+bet2 := x^4*Y^2 - y^4*X^2;
+bet3 := x^3*Y^3 - y^3*X^3;
+bet4 := x^2*Y^4 - y^2*X^4;
+bet5 := x*Y^5 - y*X^5;
+bet6 := Y^6 - X^6;
+
+b0 := bet0/del;
+b1 := bet1/del;
+b2 := bet2/del;
+b3 := bet3/del;
+b4 := bet4/del;
+b5 := bet5/del;
+b6 := bet6/del;
+
+
+Bideg := function(A);
+if A eq 0 then return [0,0];
+else
+	Num := PQ ! Numerator(A);
+	NumDeg := Exponents(LeadingMonomial(Num));
+	Den := PQ ! Denominator(A);
+	DenDeg := Exponents(LeadingMonomial(Den));
+	return [NumDeg[1] + NumDeg[2] - DenDeg[1] - DenDeg[2],
+		NumDeg[3] + NumDeg[4] - DenDeg[3] - DenDeg[4]];
+end if; end function;
+
+
+FacNice := function(g);
+if g eq 0 then return 0;
+elif IsUnit(g) then return 1;
+else return Factorisation(g);
+end if; end function;
+
+Disp := function(q);
+if q eq 0 then return 0;
+else
+	Num := FacNice(Numerator(q));
+	Den := FacNice(Denominator(q));
+	if Type(Den) eq 'RngIntElt' then return Num;
+	else return [Num, Den]; end if;
+end if; end function;
+
+
+rho := hom<PQ -> PQ | x, y, y, -x>;
+rhoQ := function(q);
+return rho(Numerator(q)) / rho(Denominator(q));
+end function;
+rhoQF := function(q);
+return Disp(rhoQ(q));
+end function;
+
+phiC := hom<PQ -> PQ | X, Y, x, y>;
+phiCQ := function(q);
+return phiC(Numerator(q)) / phiC(Denominator(q));
+end function;
+
+
+PoisPure := function(f, g)
+return Derivative(f, x)*Derivative(g, X) + Derivative(f, y)*Derivative(g, Y) - Derivative(f, X)*Derivative(g, x) - Derivative(f, Y)*Derivative(g, y);
+end function;
+
+Poisson := function(f, g)
+fN := Numerator(f);
+fD := Denominator(f);
+gN := Numerator(g);
+gD := Denominator(g);
+
+Term1 := PoisPure(fN, gN) / (fD*gD);
+Term2 := -PoisPure(fD, gN) * fN / (fD^2*gD);
+Term3 := -PoisPure(fN, gD) * gN / (fD*gD^2);
+Term4 := PoisPure(fD, gD) * fN*gN / (fD^2*gD^2);
+
+return Term1 + Term2 + Term3 + Term4;
+end function;
+
+
+Y6Relns := [
+q*b2 - e*b1 + Q*b0,
+q*b3 - e*b2 + Q*b1,
+q*b4 - e*b3 + Q*b2,
+q*b5 - e*b4 + Q*b3,
+q*b6 - e*b5 + Q*b4,
+b1^2 - b0*b2 - q^4*Q^0*Psi0,
+b1*b2 - b0*b3 - q^3*Q^0*Psi1,
+b1*b3 - b0*b4 - q^2*Q^0*Psi2,
+b1*b4 - b0*b5 - q^1*Q^0*Psi3,
+b1*b5 - b0*b6 - q^0*Q^0*Psi4,
+b2^2 - b1*b3 - q^3*Q^1*Psi0,
+b2*b3 - b1*b4 - q^2*Q^1*Psi1,
+b2*b4 - b1*b5 - q^1*Q^1*Psi2,
+b2*b5 - b1*b6 - q^0*Q^1*Psi3,
+b3^2 - b2*b4 - q^2*Q^2*Psi0,
+b3*b4 - b2*b5 - q^1*Q^2*Psi1,
+b3*b5 - b2*b6 - q^0*Q^2*Psi2,
+b4^2 - b3*b5 - q^1*Q^3*Psi0,
+b4*b5 - b3*b6 - q^0*Q^3*Psi1,
+b5^2 - b4*b6 - q^0*Q^4*Psi0
+];
+
+
+
+// We frame this as being expressible in Y(3)'s generators in the thesis,
+// and this framing is used to give the blow-up,
+// so we detail that here.
+
+c0 := x^3 - y^3;
+c1 := x^2*Y - y^2*X;
+c2 := x*Y^2 - y*X^2;
+c3 := Y^3 - X^3;
+d0 := x^3 + y^3;
+d3 := Y^3 + X^3;
+
+c0t := c0/del;
+c1t := c1/del;
+c2t := c2/del;
+c3t := c3/del;
+
+d0 eq e*c0t - 2*q*c1t;
+d3 eq -e*c3t + 2*Q*c2t;
+
+Y3Relns := [
+q*c2t - e*c1t + Q*c0t,
+q*c3t - e*c2t + Q*c1t,
+c1t^2 - c0t*c2t - q^1*Q^0*Psi0,
+c1t*c2t - c0t*c3t - q^0*Q^0*Psi1,
+c2t^2 - c1t*c3t - q^0*Q^1*Psi0
+];
+
+
+// We give calculations needed later,
+// and also justify the other generating set of \C[Y(6)] used:
+
+d0^2 eq e*b0 - 2*q*b1 + 2*q^3;
+
+d0*c0t eq b0;
+d0*c1t eq b1 - q^2;
+d0*c2t eq b2 - q*e;
+d0*c3t eq b3 + q*Q - e^2;
+
+d3*c0t eq b3 - q*Q + e^2;
+d3*c1t eq b4 + Q*e;
+d3*c2t eq b5 + Q^2;
+d3*c3t eq b6;
+
+q eq c1t^2 - c0t*c2t;
+e eq -c0t*c3t + c1t*c2t;
+Q eq c2t^2 - c1t*c3t;
+
+b0 eq e*c0t^2 - 2*q*c0t*c1t;
+b1 eq Q*c0t^2 - q*c1t^2;
+b2 eq Q*c0t*c1t - q*c1t*c2t;
+b3 eq Q*c1t^2 - q*c2t^2;
+b4 eq Q*c1t*c2t - q*c2t*c3t;
+b5 eq Q*c2t^2 - q*c3t^2;
+b6 eq -e*c3t^2 + 2*Q*c2t*c3t;
+
+
+
+
+
+
+
+
+
+// We now perform the blow-up detailed in the thesis.
+// Multiplying up by del^2 = D,
+// we re-form the ideal as <D, ci*cj> in \C[\C^4].
+
+cList := [c0, c1, c2, c3];
+GenList := [D] cat [x*y : x in cList, y in cList];
+GenId := ideal<PQ | GenList>;
+
+ChartList := [D, c0^2, c3^2];
+
+n := 2;
+RemList := GenList;
+
+GenId := ideal<PQ | GenList>;
+GenIdPow := GenId^(n-1);
+for Gen in RemList do
+	if not Gen in ChartList then
+		if Gen^n in ideal<PQ | Exclude(RemList, Gen)> * GenIdPow then
+			Exclude(~RemList, Gen);
+			"Removed generator of bidegree";
+			Bideg(Gen);
+		else
+			"Included generator of bidegree";
+			Bideg(Gen);
+		end if;
+	end if;
+end for; "break";
+
+
+// This gives the charts we expect:
+
+Set(RemList) eq Set(ChartList);
+
+
+
+// Due to the b_i being rational and not regular in \C[\C^4],
+// we cannot use the usual automation of redundancy checking.
+// We can use the symmetry of Y(6) to some extent,
+// for example knowing that the c0^2 chart is symmetric to the c3^2 chart,
+// so only having to describe one of them.
+
+
+// Consider the D chart.
+// By the following relations, we see that the D chart
+// is only left with the generators {cit * cjt : i,j \in {0,1,2,3}}.
+
+b0 eq e*c0t^2 - 2*q*c0t*c1t;
+b1 eq Q*c0t^2 - q*c1t^2;
+b2 eq Q*c0t*c1t - q*c1t*c2t;
+b3 eq Q*c1t^2 - q*c2t^2;
+b4 eq Q*c1t*c2t - q*c2t*c3t;
+b5 eq Q*c2t^2 - q*c3t^2;
+b6 eq -e*c3t^2 + 2*Q*c2t*c3t;
+
+q eq c1t^2 - c0t*c2t;
+e eq -c0t*c3t + c1t*c2t;
+Q eq c2t^2 - c1t*c3t;
+
+// It is immediate that the remaining generators,
+// being of the form {cit * cjt : i,j \in {0,1,2,3}},
+// form the \mu_2 quotient of \C^4 that is isomorphic to
+// the singularity b_2
+// (see Appendix A.2 or the b_2 code file for more).
+// This confirms the form given in my thesis.
+
+
+
+// Consider the c0^2 chart.
+// This has a strict degree.
+// For the bidegree being (x,y) \in \Z^2,
+// the strict degree is given by x + 3y.
+//
+// If we can show that a generator of the chart, f say,
+// has a relation of the form f - P = (xX+yY)Q,
+// then the terms in Q are of lower strict degree,
+// and f will be redundant to xX+yY = e,
+// alongside the lower degree terms in P and Q.
+//
+// Therefore, by Lemma 3.4.1 of my thesis,
+// if we can find P of the same bidegree as f
+// such that P is made of generators of lower degree,
+// and rho(P) = rho(f),
+// then f is redundant to the generators of lower degree.
+//
+// This is a powerful method for manual calculation
+// of redundancies, as will be evidenced.
+
+rhoQ(c2t/c0t) eq 1;
+Bideg(c2t/c0t) eq [-2,2];
+
+// This can easily be applied to see many generators are redundant.
+// For example:
+
+rhoQ(c2t/c0t * b0) eq rhoQ(b2);
+Bideg(c2t/c0t * b0) eq Bideg(b2);
+
+// Applying this leaves us with original generators q, e, b0, b1,
+// and new generators 1/c0t^2, c1t/c0t, c2t/c0t.
+// The following relations remove 3 of these:
+
+b1 eq b0*c1t/c0t + q^2;
+c2t/c0t eq (c1t/c0t)^2 - q*1/c0t^2;
+e eq b0*1/c0t^2 + 2*q*c1t/c0t;
+
+// This leaves us with only 4 generators.
+// This confirms that the c0^2 chart is isomorphic to \C^4,
+// and is generated by q, b0, 1/c0t^2 and c1t/c0t,
+// as stated in my thesis.
+
