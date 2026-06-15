@@ -1,0 +1,128 @@
+
+// This is code to accompany the files describing the blow-ups
+// of \C^4 / G_6 corresponding to points and lines in Figure 1.
+// It is written in the programming language Magma.
+
+Prel<Pq> := PolynomialRing(Integers());
+Q<q> := NumberField(Pq^2 + 3);
+A := AffineSpace(Q, 4);
+PQ<x,y,X,Y> := CoordinateRing(A);
+q := PQ ! q;
+
+
+phi := hom<PQ -> PQ | X, Y, x, y>;
+
+F11 := x*X + Y*y;
+F40 := x^4 - 2*q*x^2*y^2 + y^4;
+F31 := x^3*Y - q*x^2*y*X + q*x*y^2*Y - y^3*X;
+F13 := x*Y^3 + q*y*X*Y^2 - q*x*X^2*Y - y*X^3;
+F04 := X^4 + 2*q*X^2*Y^2 + Y^4;
+F60 := x^5*y - x*y^5;
+F33 := x^3*X*Y^2 - x^2*y*Y^3 - x*y^2*X^3 + y^3*X^2*Y;
+F06 := X^5*Y - X*Y^5;
+
+F40bar := x^4 + 2*q*x^2*y^2 + y^4;
+F31bar := x^3*Y + q*x^2*y*X - q*x*y^2*Y - y^3*X;
+F13bar := x*Y^3 - q*y*X*Y^2 + q*x*X^2*Y - y*X^3;
+F04bar := X^4 - 2*q*X^2*Y^2 + Y^4;
+G22 := x^2*X^2 + q*x^2*Y^2 + q*y^2*X^2 + y^2*Y^2 - 4*x*y*X*Y;
+G22bar := x^2*X^2 - q*x^2*Y^2 - q*y^2*X^2 + y^2*Y^2 - 4*x*y*X*Y;
+G51 := x^5*X - 5*x^4*y*Y - 5*x*y^4*X + y^5*Y;
+G42 := x^4*X*Y - 2*x^3*y*Y^2 + 2*x*y^3*X^2 - y^4*X*Y;
+G24 := 2*x^2*X*Y^3 + x*y*X^4 - x*y*Y^4 - 2*y^2*X^3*Y;
+G15 := x*X^5 - 5*x*X*Y^4 - 5*y*X^4*Y + y*Y^5;
+
+
+R33 := F11^3 - 3*q*F33;
+R33bar := F11^3 + 3*q*F33;
+R71 := 2*q*F11*F60 + F40*F31;
+R62 := F11^2*F40 - q*F31^2;
+R53 := 2*F11^2*F31 - q*F40*F13;
+R44 := 4*F11^4 - 3*F40*F04;
+R35 := 2*F11^2*F13 + q*F31*F04;
+R26 := F11^2*F04 + q*F13^2;
+R17 := 2*q*F11*F06 + F13*F04;
+R91 := F11*F40^2 - 6*F31*F60;
+R19 := F11*F04^2 + 6*F13*F06;
+R120 := F40^3 + 12*q*F60^2;
+R012 := F04^3 - 12*q*F06^2;
+
+
+FacNice := function(g);
+if g eq 0 then return 0;
+elif IsUnit(g) then return 1;
+else return Factorisation(g);
+end if; end function;
+
+Disp := function(frac);
+if frac eq 0 then return 0;
+else
+	Num := FacNice(Numerator(frac));
+	Den := FacNice(Denominator(frac));
+	if Type(Den) eq 'RngIntElt' then return Num;
+	elif Type(Num) eq 'RngIntElt' then return [[<1,1>], Den];
+	else return [Num, Den]; end if;
+end if; end function;
+
+
+rho := hom<PQ -> PQ | x, y, y, -x>;
+rhoQ := function(frac);
+return rho(Numerator(frac)) / rho(Denominator(frac));
+end function;
+rhoQF := function(frac);
+return Disp(rhoQ(frac));
+end function;
+
+phiC := hom<PQ -> PQ | X, Y, x, y>;
+phiCQ := function(frac);
+return phiC(Numerator(frac)) / phiC(Denominator(frac));
+end function;
+
+
+PoisPure := function(f, g)
+return Derivative(f, x)*Derivative(g, X) + Derivative(f, y)*Derivative(g, Y) - Derivative(f, X)*Derivative(g, x) - Derivative(f, Y)*Derivative(g, y);
+end function;
+
+Poisson := function(f, g)
+fN := Numerator(f);
+fD := Denominator(f);
+gN := Numerator(g);
+gD := Denominator(g);
+
+Term1 := PoisPure(fN, gN) / (fD*gD);
+Term2 := -PoisPure(fD, gN) * fN / (fD^2*gD);
+Term3 := -PoisPure(fN, gD) * gN / (fD*gD^2);
+Term4 := PoisPure(fD, gD) * fN*gN / (fD^2*gD^2);
+
+return Term1 + Term2 + Term3 + Term4;
+end function;
+
+
+Bideg := function(A);
+if A eq 0 then return [0,0];
+else
+	Num := PQ ! Numerator(A);
+	NumDeg := Exponents(LeadingMonomial(Num));
+	Den := PQ ! Denominator(A);
+	DenDeg := Exponents(LeadingMonomial(Den));
+	return [NumDeg[1] + NumDeg[2] - DenDeg[1] - DenDeg[2],
+		NumDeg[3] + NumDeg[4] - DenDeg[3] - DenDeg[4]];
+end if; end function;
+
+
+R44t := G22*G22bar;
+R93 := F40bar*F31*G22bar;
+R93p := F40*F31bar*G22;
+R66 := F04*F40bar*G22bar;
+R66p := F04bar*F40*G22;
+R39 := F04*F13bar*G22bar;
+R39p := F04bar*F13*G22;
+R131 := F40*F40bar*G51;
+R113 := F04*F04bar*G15;
+R142 := F40*F31*F40bar*F31bar;
+R214 := F04*F13*F04bar*F13bar;
+R191 := F40*F31*F40bar^3;
+R119 := F04*F13*F04bar^3;
+R240 := F40^3*F40bar^3;
+R024 := F04^3*F04bar^3;
+

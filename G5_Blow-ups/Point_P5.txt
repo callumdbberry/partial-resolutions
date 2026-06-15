@@ -1,0 +1,539 @@
+
+// This is code to describe the blow-up
+// of \C^4 / G_6 corresponding to point P_5 in Figure 1.
+// It is written in the programming language Magma.
+//
+// This is intended to be used after the code in Base_work.txt.
+
+
+
+// This is the current form of obtaining the ideal.
+// If I have time, I'll improve it
+// and make it more sound, and also more legible.
+// Regardless, a blow-up giving these results is sufficient
+// for the results in my thesis.
+
+
+Gen11c11 := F31bar^2*F13bar^2*F33;
+Gen18c6 := F31bar^6;
+Gen16c8 := F31bar^4*F13bar*F31;
+Gen14c10 := F31bar^2*F13bar^2*F31^2;
+Gen12c12 := F31bar^2*F13bar^2*F31*F13;
+Gen10c14 := F31bar^2*F13bar^2*F13^2;
+Gen8c16 := F31bar*F13bar^4*F13;
+Gen6c18 := F13bar^6;
+Gen19c7 := F40bar*F31bar^4*F33;
+Gen14c10p := F31bar^2*F13bar*F33*G42;
+Gen17c9 := F31bar^2*F33*G42^2;
+Gen28c4 := F40bar*F31bar^4*F60^2;
+Gen25c5 := F40bar*F31bar^4*F31*F60;
+Gen22c6 := F40bar*F31bar^4*F31^2;
+Gen7c19 := F13bar^4*F04bar*F33;
+Gen10c14p := F31bar*F13bar^2*F33*G24;
+Gen9c17 := F13bar^2*F33*G24^2;
+Gen4c28 := F13bar^4*F04bar*F06^2;
+Gen5c25 := F13bar^4*F04bar*F13*F06;
+Gen6c22 := F13bar^4*F04bar*F13^2;
+Gen60c0 := F40bar^6*F60^6;
+Gen57c1 := F40bar^4*F60^6*G51;
+Gen49c1 := F40bar^4*F31bar*F60^5;
+Gen0c60 := F04bar^6*F06^6;
+Gen1c57 := F04bar^4*F06^6*G15;
+Gen1c49 := F13bar*F04bar^4*F06^5;
+Gen38c2 := F40bar^2*F31bar^2*F60^4;
+Gen35c3 := F40bar^2*F31bar^2*F31*F60^3;
+Gen2c38 := F13bar^2*F04bar^2*F06^4;
+Gen3c35 := F13bar^2*F04bar^2*F13*F06^3;
+
+OldGenList := [
+Gen11c11, Gen18c6, Gen16c8, Gen14c10, Gen12c12, Gen10c14, 
+Gen8c16, Gen6c18, Gen19c7, Gen14c10p, Gen17c9, Gen28c4, Gen25c5, 
+Gen22c6, Gen7c19, Gen10c14p, Gen9c17, Gen4c28, Gen5c25, Gen6c22, 
+Gen60c0, Gen57c1, Gen49c1, Gen0c60, Gen1c57, Gen1c49, Gen38c2, 
+Gen35c3, Gen2c38, Gen3c35
+];
+// [el in IxY6 : el in OldGenList];
+
+
+REven := [R120, R91, R62, R33, R26, R19, R012];
+ROdd := [R71, R53, R35, R17];
+FOddPartial := [F60, F06];
+// Only partial to remove F31*R35*R33 and its symmetry.
+
+LOdd := ROdd cat [REv * FO : REv in REven , FO in FOddPartial];
+LOdd2L := [TOdd1 * TOdd2 : TOdd1 in LOdd, TOdd2 in LOdd]
+cat [REv * F31bar*F13bar : REv in REven];
+
+LOdd2 := OldGenList cat [F31bar^6, F13bar^6];
+for el in LOdd2L do
+	if not el in LOdd2 then
+		Include(~LOdd2, el);
+	end if;
+end for;
+
+
+
+
+
+FxY1 := [F31, F13, F60, F06];
+for El in FxY1 do
+	if El in ideal<PQ | Exclude(FxY1, El)> then
+		Exclude(~FxY1, El);
+	end if;
+end for;
+
+FxY2 := [el1 * el2 : el1 in FxY1, el2 in FxY1] cat [F33];
+for El in FxY2 do
+	if El in ideal<PQ | Exclude(FxY2, El)> then
+		Exclude(~FxY2, El);
+	end if;
+end for;
+
+FxY3 := [el1 * el2 : el1 in FxY1, el2 in FxY2];
+for El in FxY3 do
+	if El in ideal<PQ | Exclude(FxY3, El)> then
+		Exclude(~FxY3, El);
+	end if;
+end for;
+
+FxY4 := [el1 * el2 : el1 in FxY2, el2 in FxY2];
+for El in FxY4 do
+	if El in ideal<PQ | Exclude(FxY4, El)> then
+		Exclude(~FxY4, El);
+	end if;
+end for;
+
+FxY5 := [el1 * el2 * el3 : el1 in FxY1, el2 in FxY2, el3 in FxY2];
+for El in FxY5 do
+	if El in ideal<PQ | Exclude(FxY5, El)> then
+		Exclude(~FxY5, El);
+	end if;
+end for;
+
+FxY6 := [el1 * el2 * el3 : el1 in FxY2, el2 in FxY2, el3 in FxY2];
+for El in FxY6 do
+	if El in ideal<PQ | Exclude(FxY6, El)> then
+		Exclude(~FxY6, El);
+	end if;
+end for;
+
+// Sizes (4, 8, 14, 21, 30, 40)
+
+
+
+IxY := ideal<PQ | x*y, x*Y, y*X, X*Y>;
+IxY2 := IxY^2;
+IxY3 := IxY^3;
+IxY4 := IxY^4;
+IxY5 := IxY^5;
+IxY6 := IxY^6;
+// (Between 0 and 2 for P3Gens)
+
+
+GenList1 := [];
+GenId1 := ideal<PQ | GenList1>;
+
+for El in LOdd2 do
+	if El in IxY6 then
+		List := [El];
+	else
+	
+	if El in IxY5 then
+		List := [El * el : el in FxY1];
+	else
+	
+	if El in IxY4 then
+		List := [El * el : el in FxY2];
+	else
+	
+	if El in IxY3 then
+		List := [El * el : el in FxY3];
+	else
+	
+	if El in IxY2 then
+		List := [El * el : el in FxY4];
+	else
+	
+	if El in IxY then
+		List := [El * el : el in FxY5];
+	else
+		List := [El * el : el in FxY6];
+	end if;
+	end if;
+	end if;
+	end if;
+	end if;
+	end if;
+	
+	for El2 in List do
+		Bdeg := Bideg(El2);
+		Diff := Bdeg[1] - Bdeg[2];
+		if Diff mod 4 eq 0 then
+			if not El2 in GenId1 then
+				Include(~GenList1, El2);
+				GenId1 := ideal<PQ | GenList1>;
+				"Included element of bidegree";
+				Bideg(El2);
+			end if;
+		end if;
+	end for;
+end for;
+
+
+
+
+for Gen in GenList1 do
+	if GenId1 eq ideal<PQ | Exclude(GenList1, Gen)> then
+		Exclude(~GenList1, Gen);
+	end if;
+end for;
+
+// Down from 136 to 93
+
+
+
+
+
+
+
+Gen11c11 := F31bar^2*F13bar^2*F33;
+Gen18c6 := F31bar^6;
+Gen16c8 := F31bar^4*F13bar*F31;
+Gen14c10 := F31bar^2*F13bar^2*F31^2;
+Gen12c12 := F31bar^2*F13bar^2*F31*F13;
+Gen10c14 := F31bar^2*F13bar^2*F13^2;
+Gen8c16 := F31bar*F13bar^4*F13;
+Gen6c18 := F13bar^6;
+Gen19c7 := F40bar*F31bar^4*F33;
+Gen14c10p := F31bar^2*F13bar*F33*G42;
+Gen17c9 := F31bar^2*F33*G42^2;
+Gen28c4 := F40bar*F31bar^4*F60^2;
+Gen25c5 := F40bar*F31bar^4*F31*F60;
+Gen22c6 := F40bar*F31bar^4*F31^2;
+Gen7c19 := F13bar^4*F04bar*F33;
+Gen10c14p := F31bar*F13bar^2*F33*G24;
+Gen9c17 := F13bar^2*F33*G24^2;
+Gen4c28 := F13bar^4*F04bar*F06^2;
+Gen5c25 := F13bar^4*F04bar*F13*F06;
+Gen6c22 := F13bar^4*F04bar*F13^2;
+Gen60c0 := F40bar^6*F60^6;
+Gen57c1 := F40bar^4*F60^6*G51;
+Gen49c1 := F40bar^4*F31bar*F60^5;
+Gen0c60 := F04bar^6*F06^6;
+Gen1c57 := F04bar^4*F06^6*G15;
+Gen1c49 := F13bar*F04bar^4*F06^5;
+Gen38c2 := F40bar^2*F31bar^2*F60^4;
+Gen35c3 := F40bar^2*F31bar^2*F31*F60^3;
+Gen2c38 := F13bar^2*F04bar^2*F06^4;
+Gen3c35 := F13bar^2*F04bar^2*F13*F06^3;
+
+Gen26c6 := F40bar^2*F31bar^2*F31^4;
+Gen29c5 := F40bar^2*F31bar^2*F31^3*F60;
+Gen32c4 := F40bar^2*F31bar^2*F31^2*F60^2;
+Gen23c7 := F40bar^2*F31bar^2*F31^2*F33;
+Gen20c8 := F40bar^2*F31bar^2*F33^2;
+Gen22c10 := F40bar*F31bar*F13bar*G22bar*F31^4;
+Gen25c9 := F40bar*F31bar*F13bar*G22bar*F31^3*F60;
+Gen28c8 := F40bar*F31bar*F13bar*G22bar*F31^2*F60^2;
+Gen31c7 := F40bar*F31bar*F13bar*G22bar*F31*F60^3;
+Gen34c6 := F40bar*F31bar*F13bar*G22bar*F60^4;
+Gen19c11 := F40bar*F31bar*F13bar*G22bar*F31^2*F33;
+Gen16c12 := F40bar*F31bar*F13bar*G22bar*F33^2;
+Gen37c5 := F40bar^4*F31bar*F31^4*F60;
+Gen40c4 := F40bar^4*F31bar*F31^3*F60^2;
+Gen43c3 := F40bar^4*F31bar*F31^2*F60^3;
+Gen46c2 := F40bar^4*F31bar*F31*F60^4;
+
+Gen14c18 := F31bar^2*G22^2*F13^4;
+Gen13c21 := F31bar^2*G22^2*F13^3*F06;
+Gen12c24 := F31bar^2*G22^2*F13^2*F06^2;
+Gen11c27 := F31bar^2*G22^2*F13*F06^3;
+Gen10c30 := F31bar^2*G22^2*F06^4;
+
+Gen15c15 := F31bar^2*G22^2*F13^2*F33;
+Gen16c12p := F31bar^2*G22^2*F33^2;
+
+Gen10c22 := F31bar*F13bar*F04bar*G22*F13^4;
+Gen9c25 := F31bar*F13bar*F04bar*G22*F13^3*F06;
+Gen8c28 := F31bar*F13bar*F04bar*G22*F13^2*F06^2;
+Gen7c31 := F31bar*F13bar*F04bar*G22*F13*F06^3;
+Gen6c34 := F31bar*F13bar*F04bar*G22*F06^4;
+Gen11c19 := F31bar*F13bar*F04bar*G22*F13^2*F33;
+Gen12c16 := F31bar*F13bar*F04bar*G22*F33^2;
+Gen9c33 := F31bar*F04bar^3*G22*F13^4*F06;
+Gen8c36 := F31bar*F04bar^3*G22*F13^3*F06^2;
+Gen7c39 := F31bar*F04bar^3*G22*F13^2*F06^3;
+Gen6c42 := F31bar*F04bar^3*G22*F13*F06^4;
+Gen5c45 := F31bar*F04bar^3*G22*F06^5;
+
+Gen18c14 := G22bar^2*F13bar^2*F31^4;
+Gen21c13 := G22bar^2*F13bar^2*F31^3*F60;
+Gen24c12 := G22bar^2*F13bar^2*F31^2*F60^2;
+Gen27c11 := G22bar^2*F13bar^2*F31*F60^3;
+Gen30c10 := G22bar^2*F13bar^2*F60^4;
+Gen15c15p := F13bar^2*G22bar^2*F31^2*F33;
+Gen12c16p := F13bar^2*G22bar^2*F33^2;
+
+Gen33c9 := F40bar^3*F13bar*G22bar*F31^4*F60;
+Gen36c8 := F40bar^3*F13bar*G22bar*F31^3*F60^2;
+Gen39c7 := F40bar^3*F13bar*G22bar*F31^2*F60^3;
+Gen42c6 := F40bar^3*F13bar*G22bar*F31*F60^4;
+Gen45c5 := F40bar^3*F13bar*G22bar*F60^5;
+Gen6c26 := F13bar^2*F04bar^2*F13^4;
+Gen5c29 := F13bar^2*F04bar^2*F13^3*F06;
+Gen4c32 := F13bar^2*F04bar^2*F13^2*F06^2;
+Gen7c23 := F13bar^2*F04bar^2*F13^2*F33;
+Gen8c20 := F13bar^2*F04bar^2*F33^2;
+Gen5c37 := F13bar*F04bar^4*F13^4*F06;
+Gen4c40 := F13bar*F04bar^4*F13^3*F06^2;
+Gen3c43 := F13bar*F04bar^4*F13^2*F06^3;
+Gen2c46 := F13bar*F04bar^4*F13*F06^4;
+
+Gen48c4 := F40bar^6*F31^4*F60^2;
+Gen51c3 := F40bar^6*F31^3*F60^3;
+Gen54c2 := F40bar^6*F31^2*F60^4;
+Gen4c48 := F04bar^6*F13^4*F06^2;
+Gen3c51 := F04bar^6*F13^3*F06^3;
+Gen2c54 := F04bar^6*F13^2*F06^4;
+Gen13c13 := F31bar*F13bar*R33*F33^2;
+
+
+
+
+GenList := [
+Gen11c11, Gen18c6, Gen16c8, Gen14c10, Gen12c12, Gen10c14, 
+Gen8c16, Gen6c18, Gen19c7, Gen14c10p, Gen17c9, Gen28c4, Gen25c5, 
+Gen22c6, Gen7c19, Gen10c14p, Gen9c17, Gen4c28, Gen5c25, Gen6c22, 
+Gen60c0, Gen57c1, Gen49c1, Gen0c60, Gen1c57, Gen1c49, Gen38c2, 
+Gen35c3, Gen2c38, Gen3c35, Gen26c6, Gen29c5, Gen32c4, Gen23c7, 
+Gen20c8, Gen22c10, Gen25c9, Gen28c8, Gen31c7, Gen34c6, Gen19c11, 
+Gen16c12, Gen37c5, Gen40c4, Gen43c3, Gen46c2, Gen14c18, 
+Gen13c21, Gen12c24, Gen11c27, Gen10c30, Gen15c15, Gen16c12p, 
+Gen10c22, Gen9c25, Gen8c28, Gen7c31, Gen6c34, Gen11c19, 
+Gen12c16, Gen9c33, Gen8c36, Gen7c39, Gen6c42, Gen5c45, Gen18c14, 
+Gen21c13, Gen24c12, Gen27c11, Gen30c10, Gen15c15p, Gen12c16p, 
+Gen33c9, Gen36c8, Gen39c7, Gen42c6, Gen45c5, Gen6c26, Gen5c29, 
+Gen4c32, Gen7c23, Gen8c20, Gen5c37, Gen4c40, Gen3c43, Gen2c46, 
+Gen48c4, Gen51c3, Gen54c2, Gen4c48, Gen3c51, Gen2c54, Gen13c13
+];
+
+GenId := ideal<PQ | GenList>;
+
+// Checked to be a correct transcription.
+
+
+
+
+// The bidegrees of charts with strict degrees are
+// (60,0), (38,2), (18,6), (11,11),
+// and the charts symmetric to these under phi.
+
+ChartList :=
+[Gen60c0, Gen38c2, Gen18c6, Gen11c11,
+Gen6c18, Gen2c38, Gen0c60];
+
+// As these generators are quite large,
+// we manually remove the generators in GenList
+// which clearly lie between others, for a headstart.
+// That leaves us with the following:
+
+RemList := ChartList cat
+[Gen14c10, Gen10c14,
+Gen17c9, Gen9c17,
+Gen57c1, Gen1c57,
+Gen26c6, Gen6c26,
+Gen20c8, Gen8c20,
+Gen14c18, Gen18c14,
+Gen10c30, Gen30c10,
+Gen16c12p, Gen12c16p,
+Gen45c5, Gen5c45,
+Gen18c14, Gen14c18,
+Gen13c13];
+
+n := 2;
+
+GenId := ideal<PQ | GenList>;
+GenIdPow := GenId^(n-1);
+for Gen in RemList do
+	if not Gen in ChartList then
+		if Gen^n in ideal<PQ | Exclude(RemList, Gen)> * GenIdPow then
+			Exclude(~RemList, Gen);
+			"Removed generator of bidegree";
+			Bideg(Gen);
+		else
+			"Included generator of bidegree";
+			Bideg(Gen);
+		end if;
+	end if;
+end for; "break";
+
+// This confirms that the charts with strict degrees cover the blow-up.
+
+
+
+// We find the generators for these charts:
+
+G6Gens := [F11, F40, F04, F33, F31^2, F13^2, F31*F60, F13*F06, F60^2, F06^2];
+OrigGens := G6Gens;
+NewGens := GenList;
+n := 2;
+
+GenId := ideal<PQ | GenList>;
+Idealnm1 := GenId^(n-1);
+
+ChartList :=
+[Gen60c0, Gen38c2, Gen18c6, Gen11c11,
+Gen6c18, Gen2c38, Gen0c60];
+ReqGenList := [];
+for Chart in ChartList do
+	ChartOGens := [];
+	OTestI := Idealnm1 * ideal<PQ | Exclude(NewGens, Chart)>;
+	for OGen in OrigGens do
+		BVal := OGen*Chart^n in OTestI;
+		if not BVal then
+			Bideg(OGen);
+			Append(~ChartOGens, OGen);
+		end if;
+	end for;
+	
+	ChartNGens := [];
+	OtherGens := Exclude(NewGens, Chart);
+	for NGen in OtherGens do
+		BVal := NGen*Chart^(n-1) in Idealnm1 *
+		ideal<PQ | Exclude(OtherGens, NGen)>;
+		if not BVal then
+			Bideg(NGen);
+			Append(~ChartNGens, NGen);
+		end if;
+	end for;
+	
+	
+	Data := [[Chart], ChartOGens, ChartNGens];
+	ReqGenList cat:= [Data];
+	
+	"done for"; Bideg(Chart);
+	#ChartOGens + #ChartNGens;
+	[Bideg(el) : el in ChartOGens];
+	[Bideg(el) : el in ChartNGens];
+	"---------------------";
+end for;
+
+
+
+
+
+// Chart for (60,0):
+// (Note that (0,60) chart is isomorphic by symmetry.)
+
+Data60c0 := ReqGenList[1];
+
+Data60c0[1][1] eq Gen60c0;
+
+Data60c0[2] eq [F40, F60^2];
+
+Data60c0[3] eq [
+Gen57c1, Gen49c1
+];
+
+// This is chart C_1 in the thesis.
+// This confirms it is isomorphic to \C^4,
+// and is generated by F_{4,0}, F_{6,0}^2,
+// Gen49c1/Gen60c0 and Gen57c1/Gen60c0,
+// as stated in my thesis.
+
+
+
+
+
+// Chart for (38,2):
+// (Note that (2,38) chart is isomorphic by symmetry.)
+
+Data38c2 := ReqGenList[2];
+
+Data38c2[1][1] eq Gen38c2;
+
+Data38c2[2] eq [F40, F60^2];
+
+Data38c2[3] eq [
+Gen28c4, Gen49c1, Gen35c3
+];
+
+// This is chart C_14 in the thesis.
+// The given generators align, we just need to remove F60^2.
+
+F60^2 * Gen38c2^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen38c2)>;
+F40^3 - F40bar^3 + 12*q*F60^2 eq 0;
+F40bar^3 * Gen38c2^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen38c2)>;
+
+// This confirms it is isomorphic to \C^4,
+// and is generated by F40, Gen28c4/Gen38c2,
+// Gen49c1/Gen38c2 and Gen35c3/Gen38c2,
+// as stated in my thesis.
+
+
+
+
+
+// Chart for (18,6):
+// (Note that (6,18) chart is isomorphic by symmetry.)
+
+Data18c6 := ReqGenList[3];
+
+Data18c6[1][1] eq Gen18c6;
+
+Data18c6[2] eq [F11, F40, F31*F60, F60^2];
+
+Data18c6[3] eq [
+Gen11c11, Gen16c8, Gen19c7, Gen14c10,
+Gen17c9, Gen28c4, Gen25c5, Gen22c6
+];
+
+// This is chart C_19 in the thesis.
+// This is expected to be ac_2.
+// The given generators have bidegrees which align,
+// we just need to remove F31*F60 and F60^2.
+
+F31*F60 * Gen18c6^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen18c6)>;
+6*F31*F60 + F40bar*G51 - F11*F40^2 eq 0;
+F40bar*G51 * Gen18c6^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen18c6)>;
+
+F60^2 * Gen18c6^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen18c6)>;
+F40^3 - F40bar^3 + 12*q*F60^2 eq 0;
+F40bar^3 * Gen18c6^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen18c6)>;
+
+// The given generators have bidegrees which align, albeit after some manual work.
+// Detailed isomorphism to come later.
+
+
+
+
+
+// Chart for (11,11):
+
+Data11c11 := ReqGenList[1];
+
+Data11c11[1][1] eq Gen11c11;
+
+Data11c11[2] eq [F11];
+
+Data11c11[3] eq [
+Gen18c6, Gen16c8, Gen14c10, Gen12c12,
+Gen10c14, Gen8c16, Gen6c18,
+Gen14c10p, Gen10c14p
+];
+
+// This is chart C_18 in the thesis.
+// This is expected to be b_2.
+// The given generators have bidegrees which align,
+// we just need to remove Gen14c10p and Gen10c14p.
+
+Gen14c10p2 := Gen14c10 - 2*q*Gen14c10p;
+Disp(Gen14c10p2) eq Disp(F31bar^4*F13bar*F13);
+Gen14c10p2^2 in GenId*ideal<PQ | Exclude(GenList, Gen14c10p)>;
+
+Gen10c14p2 := Gen10c14 + 2*q*Gen10c14p;
+Disp(Gen10c14p2) eq Disp(F31*F31bar*F13bar^4);
+Gen10c14p2^2 in GenId*ideal<PQ | Exclude(GenList, Gen10c14p)>;
+
+// The given generators have bidegrees which align, albeit after some manual work.
+// Detailed isomorphism to come later.

@@ -1,0 +1,264 @@
+
+// This is code to describe the blow-up
+// of \C^4 / G_6 corresponding to point P_3 in Figure 1.
+// It is written in the programming language Magma.
+//
+// This is intended to be used after the code in Base_work.txt.
+
+
+
+// This is the current form of obtaining the ideal.
+// If I have time, I'll improve it
+// and make it more sound, and also more legible.
+// Regardless, a blow-up giving these results is sufficient
+// for the results in my thesis.
+
+
+REven := [R120, R91, R62, R33, R26, R19, R012];
+ROdd := [R71, R53, R35, R17];
+FOddPartial := [F60, F06];
+// Only partial to remove F31*R35*R33 and its symmetry.
+
+LOdd := ROdd cat [REv * FO : REv in REven , FO in FOddPartial];
+LOdd2 := [TOdd1 * TOdd2 : TOdd1 in LOdd, TOdd2 in LOdd]
+cat [REv * F31bar*F13bar : REv in REven];
+
+List := LOdd2;
+
+
+GenList1 := [];
+for elL in List do
+	Include(~GenList1, elL);
+end for;
+GenList1Save := GenList1;
+
+// This removes duplicates, giving 157 elements.
+
+
+
+
+for Gen in GenList1 do
+	if Gen in ideal<PQ | Exclude(GenList1, Gen)> then
+		Exclude(~GenList1, Gen);
+	end if;
+end for;
+
+// This leaves 38, and double-checked the ideal is the same.
+// ideal<PQ | GenList1> eq ideal<PQ | GenList1Save>;
+// This is the ideal.
+
+
+Gen14c2 := F40bar^2*F31bar^2;
+Gen12c4 := F40bar*F31bar^2*G22;
+Gen25c1 := F40bar^4*F31bar*F60;
+Gen22c2 := F40bar^2*F31bar*G51*F60;
+Gen19c3 := F40bar^2*F31bar*G22bar*F60;
+Gen10c6 := F31bar^2*G22^2;
+Gen8c8 := F31bar*F13bar*G22*G22bar;
+Gen8c12 := F31bar*G22*F06*R33;
+Gen7c15 := F31bar*F04bar*G22^2*F06;
+Gen6c10 := F13bar^2*G22bar^2;
+Gen4c12 := F13bar^2*F04bar*G22bar;
+Gen15c7 := F40bar*F13bar*G22bar^2*F60;
+Gen12c8 := F13bar*G22bar*F60*R33;
+Gen2c14 := F13bar^2*F04bar^2;
+Gen3c19 := F13bar*F04bar^2*G22*F06;
+Gen2c22 := F13bar*F04bar^2*G15*F06;
+Gen1c25 := F13bar*F04bar^4*F06;
+Gen36c0 := F40bar^6*F60^2;
+Gen33c1 := F40bar^4*G51*F60^2;
+Gen30c2 := F40bar^2*G51^2*F60^2;
+Gen27c3 := F40bar^2*G22bar*G51*F60^2;
+Gen24c4 := F40bar^2*G22bar^2*F60^2;
+Gen21c5 := F40bar*G22bar*F60^2*R33;
+Gen18c6 := F60^2*R33^2;
+Gen6c18 := F06^2*R33^2;
+Gen5c21 := F04bar*G22*F06^2*R33;
+Gen4c24 := F04bar^2*G22^2*F06^2;
+Gen3c27 := F04bar^2*G22*G15*F06^2;
+Gen2c30 := F04bar^2*G15^2*F06^2;
+Gen1c33 := F04bar^4*G15*F06^2;
+Gen0c36 := F04bar^6*F06^2;
+Gen16c4 := F40bar*F31bar*F60*R33;
+Gen13c5 := F40bar*F31bar*F13bar*G51;
+Gen10c6p := F40bar*F31bar*F13bar*G22bar;
+Gen7c7 := F31bar*F13bar*R33;
+Gen6c10p := F31bar*F13bar*F04bar*G22;
+Gen5c13 := F31bar*F13bar*F04bar*G15;
+Gen4c16 := F13bar*F04bar*F06*R33;
+
+GenList := [
+Gen14c2, Gen12c4, Gen25c1, Gen22c2, Gen19c3, Gen10c6, Gen8c8, 
+Gen8c12, Gen7c15, Gen6c10, Gen4c12, Gen15c7, Gen12c8, Gen2c14, 
+Gen3c19, Gen2c22, Gen1c25, Gen36c0, Gen33c1, Gen30c2, Gen27c3, 
+Gen24c4, Gen21c5, Gen18c6, Gen6c18, Gen5c21, Gen4c24, Gen3c27, 
+Gen2c30, Gen1c33, Gen0c36, Gen16c4, Gen13c5, Gen10c6p, Gen7c7, 
+Gen6c10p, Gen5c13, Gen4c16];
+
+
+
+// Listing the affine charts with strict degree:
+
+GenC1 := Gen36c0;
+GenY61 := Gen14c2;
+GenB1 := Gen7c7;
+GenY62 := Gen2c14;
+GenC2 := Gen0c36;
+
+ChartList := [GenC1, GenY61, GenB1, GenY62, GenC2];
+
+
+// Finding the other charts as redundant:
+
+n := 2;
+
+RemList := GenList;
+GenId := ideal<PQ | GenList>;
+GenIdPow := GenId^(n-1);
+for Gen in RemList do
+	if not Gen in ChartList then
+		if Gen^n in ideal<PQ | Exclude(RemList, Gen)>* GenIdPow then
+			Exclude(~RemList, Gen);
+			"Removed generator of bidegree";
+			Bideg(Gen);
+		else
+			"Included generator of bidegree";
+			Bideg(Gen);
+		end if;
+	end if;
+end for; "break";
+
+// This leaves in Gen10c6 and Gen6c10.
+// These are taken out manually:
+// Gen10c6 + q*Gen10c6p + 2*F31bar*G42*R33 eq 0;
+// Gen := F31bar*G42*R33; Gen^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen)>;
+// We confirm the generators left in are as stated, and that they are still
+// covered when Gen10c6 and Gen6c10 are preemptively removed:
+
+Set(RemList) diff Set(ChartList) eq {Gen10c6, Gen6c10};
+
+RemList2 := Exclude(Exclude(GenList, Gen10c6), Gen6c10);
+Gen10c6p^2 in ideal<PQ | RemList2> * ideal<PQ | Exclude(RemList2, Gen10c6p)>;
+Gen6c10p^2 in ideal<PQ | RemList2> * ideal<PQ | Exclude(RemList2, Gen6c10p)>;
+
+// This confirms that the charts with strict degrees cover the blow-up.
+
+
+
+
+// We find the generators for these charts:
+
+G6Gens := [F11, F40, F04, F33, F31^2, F13^2, F31*F60, F13*F06, F60^2, F06^2];
+OrigGens := G6Gens;
+NewGens := GenList;
+n := 2;
+
+GenId := ideal<PQ | GenList>;
+Idealnm1 := GenId^(n-1);
+
+ChartList :=
+[GenC1, GenY61, GenB1, GenY62, GenC2];
+ReqGenList := [];
+for Chart in ChartList do
+	ChartOGens := [];
+	OTestI := Idealnm1 * ideal<PQ | Exclude(NewGens, Chart)>;
+	for OGen in OrigGens do
+		BVal := OGen*Chart^n in OTestI;
+		if not BVal then Append(~ChartOGens, OGen); end if;
+	end for;
+	
+	ChartNGens := [];
+	OtherGens := Exclude(NewGens, Chart);
+	for NGen in OtherGens do
+		BVal := NGen*Chart^(n-1) in Idealnm1 *
+		ideal<PQ | Exclude(OtherGens, NGen)>;
+		if not BVal then Append(~ChartNGens, NGen); end if;
+	end for;
+	
+	
+	Data := [[Chart], ChartOGens, ChartNGens];
+	ReqGenList cat:= [Data];
+	
+	"done for"; Bideg(Chart);
+	#ChartOGens + #ChartNGens;
+	[Bideg(el) : el in ChartOGens];
+	[Bideg(el) : el in ChartNGens];
+	"---------------------";
+end for;
+
+
+
+
+
+// Chart for (36,0):
+// (Note that (0,36) chart is isomorphic by symmetry.)
+
+Data36c0 := ReqGenList[1];
+
+Data36c0[1][1] eq Gen36c0;
+
+Data36c0[2] eq [F40, F60^2];
+
+Data36c0[3] eq [
+Gen25c1, Gen33c1
+];
+
+// This is chart C_1 in the thesis.
+// This confirms it is isomorphic to \C^4,
+// and is generated by F_{4,0}, F_{6,0}^2,
+// Gen25c1/Gen36c0 and Gen33c1/Gen36c0,
+// as stated in my thesis.
+
+
+
+
+
+// Chart for (14,2):
+// (Note that (2,14) chart is isomorphic by symmetry.)
+
+Data14c2 := ReqGenList[2];
+
+Data14c2[1][1] eq Gen14c2;
+
+Data14c2[2] eq [F11, F40, F31^2];
+
+Data14c2[3] eq [
+Gen12c4, Gen25c1, Gen22c2, Gen19c3,
+Gen16c4, Gen13c5, Gen10c6p, Gen7c7
+];
+
+// This is chart C_9 in the thesis.
+// This is expected to be Y(6).
+// The given generators align, we just need to remove F31^2.
+
+F31^2 * Gen14c2^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen14c2)>;
+q*F31^2 eq -F40bar*G22bar + F11^2*F40;
+(F40bar*G22bar)^2 * Gen14c2^3 in ideal<PQ | GenList>^2 * ideal<PQ | Exclude(GenList, Gen14c2)>;
+
+// This removes F31^2.
+// The remaining generators have bidegrees which align.
+// Detailed isomorphism to come later.
+
+
+
+
+
+// Chart for (7,7):
+
+Data7c7 := ReqGenList[3];
+
+Data7c7[1][1] eq Gen7c7;
+
+Data7c7[2] eq [F11];
+
+Data7c7[3] eq [
+Gen14c2, Gen12c4, Gen10c6, Gen8c8, Gen6c10,
+Gen4c12, Gen2c14, Gen10c6p, Gen6c10p
+];
+
+// This is chart C_11 in the thesis.
+// This is expected to be b_2.
+// The given generators have bidegrees which align.
+// Detailed isomorphism to come later.
+
+
