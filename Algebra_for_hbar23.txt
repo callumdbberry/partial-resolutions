@@ -1,6 +1,9 @@
 
 // This is code to look at the algebra of the singularity \bar{h}_{2,3}.
 // It is written in the programming language Magma.
+//
+// This is the very basics of just giving the ideal of relations.
+// For more, see hbar23_singularity.txt in Appendix_A_Singularities.
 
 PQ<
 ksi1, ksi2, ksi3, r10, rm10,

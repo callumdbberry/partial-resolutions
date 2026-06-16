@@ -220,7 +220,7 @@ c03*c1 - c01^2 + 4*h^2*b03*b1 + 4/3*h^2*a02*a0 + 1/3*h^4*a02,
 [el in hbar23RelnId : el in Relns];
 
 
-// This confirms that they are all indeed 0.
+// This confirms that the relations all indeed equal 0.
 // To check this ideal is prime,
 // and that it forms a 4-dimensonal variety,
 // we perform the following code:
@@ -325,7 +325,8 @@ Dimension(RelnId) eq 4;
 IsPrime(RelnId);
 
 
-// We show this ideal is dimension 2, as claimed in the thesis:
+
+// We show this specific ideal is dimension 2, as claimed in the thesis:
 
 Dimension(ideal<PQ2 | Relns, h, c3, c1, c01, c03>) eq 2;
 

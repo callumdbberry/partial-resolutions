@@ -85,8 +85,7 @@ w0^2 in ideal<PQ | ChartList>*GenId + RelnId;
 // Now, we want to automate finding relations to show redundancy of
 // generators of the coordinate algebras of each affine chart.
 // This is explained in more detail in 'Blow-up_for_G4.txt'.
-// A slight deviation is required, to add in the relations of yogh
-// at each step.
+// A slight deviation is required, to add in the relations of yogh at each step.
 
 OrigGens := YoghGens;
 NewGens := GenList;
@@ -128,8 +127,8 @@ ChartT2 := ReqGenList[1];
 ChartT2[1][1] eq t2;
 
 // Find the generators to identify them.
-[ChartT2[2]];
-[ChartT2[3]];
+ChartT2[2] eq [c1, d1, z2];
+ChartT2[3] eq [a0t, w1];
 
 // Here we have both c1 and d1 still sticking around,
 // however a linear combination is redundant as a generator,
@@ -169,8 +168,8 @@ ChartW1 := ReqGenList[2];
 ChartW1[1][1] eq w1;
 
 // Find the generators to identify them.
-[ChartW1[2]];
-[ChartW1[3]];
+ChartW1[2] eq [c1, d1];
+ChartW1[3] eq [a0t, w0, t2];
 
 // Here we again have both c1 and d1 still sticking around,
 // however a linear combination is redundant as a generator,
@@ -195,8 +194,8 @@ ChartA0t := ReqGenList[3];
 ChartA0t[1][1] eq a0t;
 
 // Find the generators to identify them.
-[ChartA0t[2]];
-[ChartA0t[3]];
+ChartA0t[2] eq [h, c01, d01, c0, d0, c1, d1];
+ChartA0t[3] eq [w1, w0, w01, t2, t02];
 
 // This is as detailed in my thesis.
 // We form an isomorphism of this with the

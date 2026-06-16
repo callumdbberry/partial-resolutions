@@ -98,4 +98,5 @@ V ! [0, 0, 1, -Conj(eps)] in ESpace1;
 // this corresponds to the fixed point space being given
 // by the equations x + Conj(eps)*y and X + eps*Y.
 
-// This is used in Algebra_for_G4.txt to find/confirm the corresponding ideal.
+// This is used in Algebra_for_G12.txt
+// to find/confirm the corresponding ideal in \C^4 / G_12.

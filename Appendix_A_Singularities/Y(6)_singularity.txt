@@ -156,7 +156,7 @@ c2t^2 - c1t*c3t - q^0*Q^1*Psi0
 
 
 // We give calculations needed later,
-// and also justify the other generating set of \C[Y(6)] used:
+// which also justify the alternate generating set of \C[Y(6)] used:
 
 d0^2 eq e*b0 - 2*q*b1 + 2*q^3;
 
@@ -181,10 +181,6 @@ b3 eq Q*c1t^2 - q*c2t^2;
 b4 eq Q*c1t*c2t - q*c2t*c3t;
 b5 eq Q*c2t^2 - q*c3t^2;
 b6 eq -e*c3t^2 + 2*Q*c2t*c3t;
-
-
-
-
 
 
 

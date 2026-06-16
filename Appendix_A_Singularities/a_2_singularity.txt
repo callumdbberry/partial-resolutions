@@ -24,6 +24,7 @@ Dimension(a2RelnId) eq 4;
 IsPrime(a2RelnId);
 
 
+// The matrix associated is
 // [a,b,c]
 // [d,e,f]
 // [g,h,i]
@@ -31,10 +32,11 @@ IsPrime(a2RelnId);
 
 
 
+
 // Consider a blow-up at the ideal <a,b,c>.
 //
 // Due to not having a bidegree to hand,
-// and the relative simplicity of the algebra,
+// and the relative simplicity of the \C[a_2] coordinate algebra,
 // we compute this manually.
 
 

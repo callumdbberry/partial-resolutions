@@ -370,7 +370,56 @@ Gen14c6, Gen14c6p, Gen8c8, Gen11c7
 // This is chart C_15 in the thesis.
 // This is expected to be b_2.
 // The given generators have bidegrees which align.
-// Detailed isomorphism to come later.
+// We compare this against the coordinate algebra
+// of the \mu_2 quotient of \C^4, isomorphic to b_2.
+// More detail is given in b_2_singularity.txt.
+
+NGens16c4 := [F11, F40];
+OGens16c4 := [
+Gen20c4, Gen23c3, Gen26c2, Gen17c5,
+Gen14c6, Gen14c6p, Gen8c8, Gen11c7
+];
+OGens16c4Frac := [el / Gen16c4 : el in OGens16c4];
+
+b2x := F60;
+b2y := F31;
+b2z := G42/F40bar;
+b2w := F13bar/F40bar;
+b2Mult := F40bar/F31bar^2;
+
+b2x2 := b2Mult * b2x^2;
+b2xy := b2Mult * b2x*b2y;
+b2xz := b2Mult * b2x*b2z;
+b2xw := b2Mult * b2x*b2w;
+b2y2 := b2Mult * b2y^2;
+b2yz := b2Mult * b2y*b2z;
+b2yw := b2Mult * b2y*b2w;
+b2z2 := b2Mult * b2z^2;
+b2zw := b2Mult * b2z*b2w;
+b2w2 := b2Mult * b2w^2;
+
+NewGens := [
+b2x2, b2xy, b2xz, b2xw, b2y2,
+b2yz, b2yw, b2z2, b2zw, b2w2
+];
+
+F11 eq 3*b2xw + b2yz;
+F40 eq b2y2 + 4*q*b2xz;
+
+OGens16c4Frac[1] eq b2y2;
+OGens16c4Frac[2] eq b2xy;
+OGens16c4Frac[3] eq b2x2;
+OGens16c4Frac[4] eq b2xw + b2yz;
+OGens16c4Frac[5] eq q*b2yw + 4*b2z2;
+OGens16c4Frac[6] eq b2yw;
+OGens16c4Frac[7] eq b2w2;
+OGens16c4Frac[8] eq b2zw;
+
+// This is evidently a linear reparametrisation.
+//
+// This concludes that this chart is isomorphic to b_2,
+// as described in the thesis.
+
 
 
 
@@ -403,15 +452,74 @@ Gen14c6*Gen8c8 in ideal<PQ | Ch8c8OGens, Gen14c6p> * ideal<PQ | Ch8c8OGens, Gen1
 
 // Likewise, we miss out on Gen10c10.
 Gen10c10*Gen8c8 in ideal<PQ | Ch8c8OGens, Gen10c10p> * ideal<PQ | Ch8c8OGens, Gen10c10, Gen10c10p>;
-// Symmetrically, we miss out on Gen10c10p as well.
 
-Ch8c8OGens cat:= [Gen14c6, Gen6c14, Gen10c10, Gen10c10p];
+Ch8c8OGens cat:= [Gen14c6, Gen6c14, Gen10c10];
 
 // We miss out on the redundancy of F33 as a generator.
 // This is given as follows:
 F33*Gen8c8 eq 2/3*F40*Gen7c11 - 1/9*q*F11*Gen10c10 + 1/9*q*F11^3*Gen8c8;
 
-// This is chart C_15 in the thesis.
-// This is expected to be b_2.
+// This is chart C_16 in the thesis.
+// This is expected to be Y(6).
 // The given generators have bidegrees which align, albeit after some manual work.
-// Detailed isomorphism to come later.
+
+// We check that this is isomorphic to Y(6).
+
+NGens8c8 := [F11, F40, F04];
+OGens8c8 := [
+Gen11c7, Gen7c11,
+Gen16c4, Gen14c6, Gen10c10, Gen6c14, Gen4c16
+];
+OGens8c8Frac := [el / Gen8c8 : el in OGens8c8];
+
+qN := Gen11c7/Gen8c8;
+eN := -q*F11;
+QN := 3*Gen7c11/Gen8c8;
+
+b0 := 1/2*Gen16c4/Gen8c8;
+b1 := 1/2*Gen14c6/Gen8c8 - qN^2;
+b2 := -3/2*F40 - 2*qN*eN;
+b3 := 3/2*Gen10c10/Gen8c8 - qN*QN;
+b4 := 9/2*F04 + 2*eN*QN;
+b5 := -9/2*Gen6c14/Gen8c8 + QN^2;
+b6 := -27/2*Gen4c16/Gen8c8;
+
+Psi0 := 1;
+Psi1 := eN;
+Psi2 := eN*Psi1 - qN*QN*Psi0;
+Psi3 := eN*Psi2 - qN*QN*Psi1;
+Psi4 := eN*Psi3 - qN*QN*Psi2;
+
+Y6Relns := [
+qN*b2 - eN*b1 + QN*b0,
+qN*b3 - eN*b2 + QN*b1,
+qN*b4 - eN*b3 + QN*b2,
+qN*b5 - eN*b4 + QN*b3,
+qN*b6 - eN*b5 + QN*b4,
+b1^2 - b0*b2 - qN^4*QN^0*Psi0,
+b1*b2 - b0*b3 - qN^3*QN^0*Psi1,
+b1*b3 - b0*b4 - qN^2*QN^0*Psi2,
+b1*b4 - b0*b5 - qN^1*QN^0*Psi3,
+b1*b5 - b0*b6 - qN^0*QN^0*Psi4,
+b2^2 - b1*b3 - qN^3*QN^1*Psi0,
+b2*b3 - b1*b4 - qN^2*QN^1*Psi1,
+b2*b4 - b1*b5 - qN^1*QN^1*Psi2,
+b2*b5 - b1*b6 - qN^0*QN^1*Psi3,
+b3^2 - b2*b4 - qN^2*QN^2*Psi0,
+b3*b4 - b2*b5 - qN^1*QN^2*Psi1,
+b3*b5 - b2*b6 - qN^0*QN^2*Psi2,
+b4^2 - b3*b5 - qN^1*QN^3*Psi0,
+b4*b5 - b3*b6 - qN^0*QN^3*Psi1,
+b5^2 - b4*b6 - qN^0*QN^4*Psi0
+];
+
+[el eq 0 : el in Y6Relns];
+
+// This is evidently a linear reparametrisation.
+//
+// This concludes that this chart is isomorphic to Y(6),
+// as described in the thesis.
+
+
+
+

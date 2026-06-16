@@ -67,11 +67,22 @@ G51 := x^5*X - 5*x^4*y*Y - 5*x*y^4*X + y^5*Y;
 G42 := x^4*X*Y - 2*x^3*y*Y^2 + 2*x*y^3*X^2 - y^4*X*Y;
 G24 := 2*x^2*X*Y^3 + x*y*X^4 - x*y*Y^4 - 2*y^2*X^3*Y;
 G15 := x*X^5 - 5*x*X*Y^4 - 5*y*X^4*Y + y*Y^5;
+
 GensCanon := [F11, F40, F31, F13, F04, F60, F33, F06];
 
 Gens eq [F11, F40, F31, -1/q*F13, F04, F60, F33, F06];
 
 
+
+// Defining rho and checking the relation:
+
+rho := hom<PQ -> PQ | x, y, y, -x>;
+
+F40^3 - F40bar^3 + 12*q*F60^2 eq 0;
+
+
+
+// We check the eigenvalues of c, as listed in the thesis.
 
 C4c := C4Matr(c);
 
@@ -94,25 +105,20 @@ end for;
 
 // We find the fixed point set of c over \C^4.
 
-Basis1 := Basis(Eigenspace(C4c, 1));
+ESpace1 := Eigenspace(C4c, 1);
+Basis1 := Basis(ESpace1);
 #Basis1 eq 2;
 
 lambda := i*sigma + sigma^2;
 
-Vec1 := Basis1[1];
-Vec1[1] eq 1;
-Vec1[2] eq lambda;
-Vec1[3] eq 0;
-Vec1[4] eq 0;
+V := VectorSpace(Q, 4);
 
-Vec2 := Basis1[2];
-Vec2[1] eq 0;
-Vec2[2] eq 0;
-Vec2[3] eq 1;
-Vec2[4] eq Conj(lambda);
+V ! [1, lambda, 0, 0] in ESpace1;
+V ! [0, 0, 1, Conj(lambda)] in ESpace1;
 
 // Note: due to having the block matrix form ((M^T)^-1, 0, 0, M),
 // this corresponds to the fixed point space being given
 // by the equations X - lambda*Y and x - Conj(lambda)*y.
 
-// This is used in Algebra_for_G4.txt to find/confirm the corresponding ideal.
+// This is used in Algebra_for_G4.txt
+// to find/confirm the corresponding ideal in \C^4 / G_4.

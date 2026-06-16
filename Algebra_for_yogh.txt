@@ -6,7 +6,7 @@ PQ<h, c01, d01, c0, d0, c1, d1, z02, z01, z0, z1, z2>
 := PolynomialRing(RationalField(),
 [2, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6]);
 
-Gens := [h, c01, d01, c0, d0, c1, d1, z02, z01, z0, z1, z2];
+YoghGens := [h, c01, d01, c0, d0, c1, d1, z02, z01, z0, z1, z2];
 
 YoghRelns := [
 c1*d0 - c0*d1 - 2*h*z1,
@@ -65,7 +65,7 @@ IsPrime(RelnId);
 
 CheckId := ideal<PQ | c1, c01, d1, d01, z2, z02, YoghRelns>;
 RadCheckId := Radical(CheckId);
-for Gen in Gens do
+for Gen in YoghGens do
 	Gen in RadCheckId;
 end for;
 
@@ -87,6 +87,10 @@ IsZeroDivisor((PQ / ideal<PQ | h, z2>) ! c01) eq false;
 ((PQ / ideal<PQ | h, z2, c01>) ! (c1 + z02) eq 0) eq false;
 IsZeroDivisor((PQ / ideal<PQ | h, z2, c01>) ! (c1 + z02)) eq false;
 
+// It is clear these terms lie in the ideal <h, c1, c0, ..., z02>.
+// This also implies that the quotient \C[yogh] / <h, z2, c01, c1 + z02>
+// is non-trivial, as 1 will not map to 0, for example.
+//
 // This concludes that h, z2, c01, c1 + z02 is a regular sequence.
 
 
@@ -95,7 +99,9 @@ IsZeroDivisor((PQ / ideal<PQ | h, z2, c01>) ! (c1 + z02)) eq false;
 // confirming the result in Section 5.4.6 of my thesis:
 
 S<t> := HilbertSeries(RelnId);
-S;
+S eq (t^12 + 4*t^8 + 4*t^6 + 4*t^4 + 1) /
+(t^16 - t^14 - 2*t^12 + t^10 + 2*t^8 + t^6 - 2*t^4 - t^2 + 1);
+
 
 
 

@@ -83,7 +83,7 @@ RealRId2 eq ElId;
 
 
 
-// We take the restriction of this to the G_5 invariant subring.
+// We now take the restriction of this to the G_5 invariant subring.
 
 PQG4<
 F40, F31, F13, F04,

@@ -231,13 +231,57 @@ Gen16c4, Gen13c5, Gen10c6p, Gen7c7
 // This is expected to be Y(6).
 // The given generators align, we just need to remove F31^2.
 
-F31^2 * Gen14c2^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen14c2)>;
-q*F31^2 eq -F40bar*G22bar + F11^2*F40;
-(F40bar*G22bar)^2 * Gen14c2^3 in ideal<PQ | GenList>^2 * ideal<PQ | Exclude(GenList, Gen14c2)>;
-
+F31^2 eq 1/3*q*F11^2*F40 + 1/q*F40^2*Gen12c4/Gen14c2
++ 2*F40*Gen16c4/Gen14c2 - 2*F11*Gen19c3/Gen14c2;
+ 
 // This removes F31^2.
 // The remaining generators have bidegrees which align.
-// Detailed isomorphism to come later.
+//
+// We check that this is isomorphic to Y(6)
+// by finding a smaller isomorphism to Y(3),
+// and then using the link between them
+// specified in Y(6)_singularity.txt.
+
+qN := q*F40;
+eN := 2*q*F11;
+QN := q*G22/F40bar;
+c0t := F40bar^2/F31bar;
+c1t := G51/F31bar;
+c2t := G22bar/F31bar;
+c3t := R33/(F40bar*F31bar);
+d0 := 12*q*F60;
+d3 := 6*q*F13bar/F40bar;
+
+Y3Relns := [
+d0 - (eN*c0t - 2*qN*c1t),
+d3 - (-eN*c3t + 2*QN*c2t),
+qN*c2t - eN*c1t + QN*c0t,
+qN*c3t - eN*c2t + QN*c1t,
+c1t^2 - c0t*c2t - qN,
+c1t*c2t - c0t*c3t - eN,
+c2t^2 - c1t*c3t - QN
+];
+[el eq 0 : el in Y3Relns];
+
+OGens14c2 := [
+Gen12c4, Gen25c1, Gen22c2, Gen19c3,
+Gen16c4, Gen13c5, Gen10c6p, Gen7c7
+];
+OGens14c2Frac := [el / Gen14c2 : el in OGens14c2];
+
+F40 eq 1/q*qN;
+F11 eq -1/6*q*eN;
+OGens14c2Frac[1] eq -1/3*q*QN;
+OGens14c2Frac[2] eq -1/36*q*c0t*d0;
+OGens14c2Frac[3] eq -1/36*q*c1t*d0;
+OGens14c2Frac[4] eq -1/36*q*c2t*d0;
+OGens14c2Frac[5] eq -1/36*q*c3t*d0;
+OGens14c2Frac[6] eq -1/6*c1t*d3 + 1/3*eN*QN;
+OGens14c2Frac[7] eq -1/18*q*c2t*d3;
+OGens14c2Frac[8] eq -1/18*q*c3t*d3;
+
+// This concludes that this chart is isomorphic to Y(6),
+// as described in the thesis.
 
 
 
@@ -259,6 +303,55 @@ Gen4c12, Gen2c14, Gen10c6p, Gen6c10p
 // This is chart C_11 in the thesis.
 // This is expected to be b_2.
 // The given generators have bidegrees which align.
-// Detailed isomorphism to come later.
+
+// We compare this against the coordinate algebra
+// of the \mu_2 quotient of \C^4, isomorphic to b_2.
+// More detail is given in b_2_singularity.txt.
+
+NGens7c7 := [F11];
+OGens7c7 := [
+Gen14c2, Gen12c4, Gen10c6, Gen8c8, Gen6c10,
+Gen4c12, Gen2c14, Gen10c6p, Gen6c10p
+];
+OGens7c7Frac := [el / Gen7c7 : el in OGens7c7];
+
+b2x := F40bar*F31bar/R33;
+b2y := F31bar*G22/R33;
+b2z := F13bar*G22bar/R33;
+b2w := F13bar*F04bar/R33;
+b2Mult := R33/(F31bar*F13bar);
+
+b2x2 := b2Mult * b2x^2;
+b2xy := b2Mult * b2x*b2y;
+b2xz := b2Mult * b2x*b2z;
+b2xw := b2Mult * b2x*b2w;
+b2y2 := b2Mult * b2y^2;
+b2yz := b2Mult * b2y*b2z;
+b2yw := b2Mult * b2y*b2w;
+b2z2 := b2Mult * b2z^2;
+b2zw := b2Mult * b2z*b2w;
+b2w2 := b2Mult * b2w^2;
+
+NewGens := [
+b2x2, b2xy, b2xz, b2xw, b2y2,
+b2yz, b2yw, b2z2, b2zw, b2w2
+];
+
+F11 eq 3/2*b2xw - 1/2*b2yz;
+
+OGens7c7Frac[1] eq b2x2;
+OGens7c7Frac[2] eq b2xy;
+OGens7c7Frac[3] eq b2y2;
+OGens7c7Frac[4] eq b2yz;
+OGens7c7Frac[5] eq b2z2;
+OGens7c7Frac[6] eq b2zw;
+OGens7c7Frac[7] eq b2w2;
+OGens7c7Frac[8] eq b2xz;
+OGens7c7Frac[9] eq b2yw;
+
+// This is evidently a linear reparametrisation.
+//
+// This concludes that this chart is isomorphic to b_2,
+// as described in the thesis.
 
 

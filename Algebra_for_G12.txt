@@ -84,7 +84,8 @@ RealRId eq ElId;
 // Since we haven't done the ideal of relations,
 // which takes too long to compute,
 // we check these ideals are equal slightly differently,
-// by showing each is contained in the other:
+// by showing each is contained in the other
+// (modulo the expressions in FDefs, which equal 0):
 
 [el in ElId : el in RList];
 

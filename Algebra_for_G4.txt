@@ -33,7 +33,7 @@ F06 - (X^5*Y - X*Y^5)
 ];
 
 
-// Confirmation of list of relations:
+// Confirmation of list of relations.
 // Note that this can take a small while to compute.
 // This will not be a reasonable calculation in algebras
 // which are notably larger.
@@ -97,4 +97,3 @@ RealRList := RList cat G4Relns;
 RealRId := ideal<PQ | RealRList>;
 
 RealRId eq ElId;
-

@@ -484,7 +484,7 @@ Data18c6[1][1] eq Gen18c6;
 Data18c6[2] eq [F11, F40, F31*F60, F60^2];
 
 Data18c6[3] eq [
-Gen11c11, Gen16c8, Gen19c7, Gen14c10,
+Gen11c11, Gen16c8, Gen19c7, Gen14c10p,
 Gen17c9, Gen28c4, Gen25c5, Gen22c6
 ];
 
@@ -502,7 +502,80 @@ F40^3 - F40bar^3 + 12*q*F60^2 eq 0;
 F40bar^3 * Gen18c6^2 in ideal<PQ | GenList> * ideal<PQ | Exclude(GenList, Gen18c6)>;
 
 // The given generators have bidegrees which align, albeit after some manual work.
-// Detailed isomorphism to come later.
+
+// We compare this against the coordinate algebra
+// of the \mu_2 quotient of the known
+// a_2 singularity from the blow-up of G_4.
+// More detail is given in ac_2_singularity.txt.
+
+NGens18c6 := [F11, F40];
+OGens18c6 := [
+Gen11c11, Gen16c8, Gen19c7, Gen14c10p,
+Gen17c9, Gen28c4, Gen25c5, Gen22c6
+];
+OGens18c6Frac := [el / Gen18c6 : el in OGens18c6];
+
+aP := -F60*F13bar/F31bar^2;
+bP := -F31*F13bar/F31bar^2;
+dP := -F60*G42/F31bar^2;
+eP := -F31*G42/F31bar^2;
+iP := F33*F40bar/F31bar^2;
+
+c2oi := F33*F13bar^2/F31bar^4;
+cfoi := F33*F13bar*G42/F31bar^4;
+f2oi := F33*G42^2/F31bar^4;
+
+g2 := F60^2*F40bar/F31bar^2;
+gh := F60*F31*F40bar/F31bar^2;
+h2 := F31^2*F40bar/F31bar^2;
+
+NewGens := [
+aP, bP, dP, eP,
+c2oi, cfoi, f2oi,
+g2, gh, h2
+];
+
+a2QuotRelns := [
+aP + eP + iP,
+bP*dP - aP*eP,
+f2oi*h2 - eP^2*iP,
+cfoi*gh - aP*eP*iP,
+c2oi*g2 - aP^2*iP,
+bP*f2oi - eP*cfoi,
+bP*cfoi - eP*c2oi,
+dP*h2 - eP*gh,
+dP*gh - eP*g2,
+bP*gh - aP*h2,
+bP*g2 - aP*gh,
+dP*cfoi - aP*f2oi,
+dP*c2oi - aP*cfoi,
+cfoi*h2 - iP*eP*bP,
+c2oi*h2 - iP*bP^2,
+c2oi*gh - aP*iP*bP,
+gh*f2oi - iP*eP*dP,
+g2*f2oi - iP*dP^2,
+g2*cfoi - aP*iP*dP,
+f2oi*c2oi - cfoi^2,
+h2*g2 - gh^2
+];
+[el eq 0 : el in a2QuotRelns];
+
+F11 eq -3*aP - eP;
+F40 eq h2 - 4*q*dP;
+
+OGens18c6Frac[1] eq c2oi;
+OGens18c6Frac[2] eq -bP;
+OGens18c6Frac[3] eq -aP - eP;
+OGens18c6Frac[4] eq cfoi;
+OGens18c6Frac[5] eq f2oi;
+OGens18c6Frac[6] eq g2;
+OGens18c6Frac[7] eq gh;
+OGens18c6Frac[8] eq h2;
+
+// This is evidently a linear reparametrisation.
+//
+// This concludes that this chart is isomorphic to ac_2,
+// as described in the thesis.
 
 
 
@@ -524,16 +597,55 @@ Gen14c10p, Gen10c14p
 
 // This is chart C_18 in the thesis.
 // This is expected to be b_2.
-// The given generators have bidegrees which align,
-// we just need to remove Gen14c10p and Gen10c14p.
+// The given generators have bidegrees which align.
 
-Gen14c10p2 := Gen14c10 - 2*q*Gen14c10p;
-Disp(Gen14c10p2) eq Disp(F31bar^4*F13bar*F13);
-Gen14c10p2^2 in GenId*ideal<PQ | Exclude(GenList, Gen14c10p)>;
+// We compare this against the coordinate algebra
+// of the \mu_2 quotient of \C^4, isomorphic to b_2.
+// More detail is given in b_2_singularity.txt.
 
-Gen10c14p2 := Gen10c14 + 2*q*Gen10c14p;
-Disp(Gen10c14p2) eq Disp(F31*F31bar*F13bar^4);
-Gen10c14p2^2 in GenId*ideal<PQ | Exclude(GenList, Gen10c14p)>;
+NGens11c11 := [F11];
+OGens11c11 := [
+Gen18c6, Gen16c8, Gen14c10, Gen14c10p, Gen12c12,
+Gen10c14, Gen10c14p, Gen8c16, Gen6c18
+];
+OGens11c11Frac := [el / Gen11c11 : el in OGens11c11];
 
-// The given generators have bidegrees which align, albeit after some manual work.
-// Detailed isomorphism to come later.
+b2x := F31bar^2/F13bar;
+b2y := F31;
+b2z := F13;
+b2w := F13bar^2/F31bar;
+b2Mult := 1/F33;
+
+b2x2 := b2Mult * b2x^2;
+b2xy := b2Mult * b2x*b2y;
+b2xz := b2Mult * b2x*b2z;
+b2xw := b2Mult * b2x*b2w;
+b2y2 := b2Mult * b2y^2;
+b2yz := b2Mult * b2y*b2z;
+b2yw := b2Mult * b2y*b2w;
+b2z2 := b2Mult * b2z^2;
+b2zw := b2Mult * b2z*b2w;
+b2w2 := b2Mult * b2w^2;
+
+NewGens := [
+b2x2, b2xy, b2xz, b2xw, b2y2,
+b2yz, b2yw, b2z2, b2zw, b2w2
+];
+
+F11 eq -1/6*q*b2xw + 1/6*q*b2yz;
+
+OGens11c11Frac[1] eq b2x2;
+OGens11c11Frac[2] eq b2xy;
+OGens11c11Frac[3] eq b2y2;
+OGens11c11Frac[4] eq 1/6*q*b2xz - 1/6*q*b2y2;
+OGens11c11Frac[5] eq b2yz;
+OGens11c11Frac[6] eq b2z2;
+OGens11c11Frac[7] eq -1/6*q*b2yw + 1/6*q*b2z2;
+OGens11c11Frac[8] eq b2zw;
+OGens11c11Frac[9] eq b2w2;
+
+// This is evidently a linear reparametrisation.
+//
+// This concludes that this chart is isomorphic to b_2,
+// as described in the thesis.
+

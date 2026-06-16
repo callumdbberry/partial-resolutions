@@ -141,13 +141,14 @@ h2, gh, g2
 // i.e. in PQ3 on a2QuotRelns.
 //
 // We are blowing up at <c^2/i, c*f/i, f^2/i, i>.
-// It is clear that the c*f/i chart is covered,
+// It is clear that the c*f/i chart is covered
+// by the c^2/i and f^2/i charts,
 // and that the f^2/i chart is symmetric to the c^2/i chart,
 // so we will only describe the charts for c^2/i and for i.
 
 
 // Consider the c^2/i chart.
-// The other generators in the ideal are clearly redundant,
+// The generators cf/i, f^2/i, i are clearly redundant,
 // as is (f^2/i) / (c^2/i) = (f/c)^2 = ((c*f/i) / (c^2/i))^2,
 // leaving us with the generators
 // a, b, d, e, c^2/i, g^2, g*h, h^2, f/c, i^2/c^2.
@@ -168,8 +169,9 @@ PQ3 ! (c2oi * (eP - bP * cfoi/c2oi)) in a2QuotRelnId;
 
 
 
+
 // Consider the i chart.
-// The other generators in the ideal are clearly redundant,
+// The generators c^2/i, cf/i, f^2/i are clearly redundant,
 // leaving us with the generators
 // a, b, d, e, g^2, g*h, h^2, i, c^2/i^2, c*f/i^2, f^2/i^2.
 

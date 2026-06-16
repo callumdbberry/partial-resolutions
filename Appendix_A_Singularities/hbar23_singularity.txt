@@ -3,8 +3,8 @@
 // It is written in the programming language Magma.
 //
 // This will generalise to \bar{h}_{2,n},
-// albeit that would have to be done by hand,
-// but the method is the same.
+// albeit that generalisation would have to be done by hand,
+// but the method for general n is the same.
 
 PQ<
 ksi1, ksi2, ksi3, r10, rm10,
@@ -68,7 +68,7 @@ r21^3 - r01*r31^2 in hbar23RelnId;
 // Consider the r01 chart.
 // It is clear the r31 chart is isomorphic by symmetry.
 //
-// The other generators in the chart are clearly redundant.
+// The generators r11, r21, r31, ksi3 are clearly redundant.
 
 PQ ! (r01^3 * (r31/r01 - (r11/r01)^3)) in hbar23RelnId;
 PQ ! (r01^2 * (r21/r01 - (r11/r01)^2)) in hbar23RelnId;
@@ -91,7 +91,7 @@ PQ ! (r01 * (ksi1 - rm10 * r11/r01)) in hbar23RelnId;
 
 
 // Consider the ksi3 chart.
-// The other generators in the chart are clearly redundant.
+// The generators r01, r11, r21, r31 in the chart are clearly redundant.
 // Define
 
 r01p := r01/ksi3;
@@ -236,8 +236,6 @@ FInv[9]
 >;
 
 [ProjMap(el) eq 0 : el in ksi3ChRelns];
-
-
 
 
 // We also claim this is terminal.

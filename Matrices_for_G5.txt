@@ -100,4 +100,5 @@ V ! [-Conj(lambda),1,0,0] in ESpace1;
 // this corresponds to the fixed point space being given
 // by the equations Conj(lambda)*X + Y and lambda*x + y.
 
-// This is used in Algebra_for_G5.txt to find/confirm the corresponding ideal.
+// This is used in Algebra_for_G5.txt
+// to find/confirm the corresponding ideal in \C^4 / G_5.
